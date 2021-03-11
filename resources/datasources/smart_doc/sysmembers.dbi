@@ -1,0 +1,16 @@
+columns:[
+{
+allowNull:true,
+creationOrderIndex:1,
+dataType:5,
+name:"groupuid"
+},
+{
+allowNull:true,
+creationOrderIndex:0,
+dataType:5,
+name:"memberuid"
+}
+],
+name:"sysmembers",
+tableType:1

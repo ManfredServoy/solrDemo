@@ -1,0 +1,16 @@
+columns:[
+{
+allowNull:false,
+creationOrderIndex:1,
+dataType:4,
+name:"assembly_id"
+},
+{
+allowNull:false,
+creationOrderIndex:0,
+dataType:4,
+name:"user_type_id"
+}
+],
+name:"type_assembly_usages",
+tableType:1

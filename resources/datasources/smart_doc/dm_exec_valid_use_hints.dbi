@@ -1,0 +1,11 @@
+columns:[
+{
+allowNull:false,
+creationOrderIndex:0,
+dataType:-9,
+length:128,
+name:"name"
+}
+],
+name:"dm_exec_valid_use_hints",
+tableType:1

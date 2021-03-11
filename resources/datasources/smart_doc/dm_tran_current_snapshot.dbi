@@ -1,0 +1,10 @@
+columns:[
+{
+allowNull:true,
+creationOrderIndex:0,
+dataType:-5,
+name:"transaction_sequence_num"
+}
+],
+name:"dm_tran_current_snapshot",
+tableType:1

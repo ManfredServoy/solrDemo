@@ -1,0 +1,16 @@
+columns:[
+{
+allowNull:false,
+creationOrderIndex:1,
+dataType:4,
+name:"member_principal_id"
+},
+{
+allowNull:false,
+creationOrderIndex:0,
+dataType:4,
+name:"role_principal_id"
+}
+],
+name:"server_role_members",
+tableType:1

@@ -1,0 +1,11 @@
+columns:[
+{
+allowNull:true,
+creationOrderIndex:0,
+dataType:-15,
+length:1,
+name:"drivename"
+}
+],
+name:"dm_io_cluster_shared_drives",
+tableType:1

@@ -1,0 +1,16 @@
+columns:[
+{
+allowNull:false,
+creationOrderIndex:1,
+dataType:4,
+name:"service_contract_id"
+},
+{
+allowNull:false,
+creationOrderIndex:0,
+dataType:4,
+name:"service_id"
+}
+],
+name:"service_contract_usages",
+tableType:1

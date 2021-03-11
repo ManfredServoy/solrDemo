@@ -1,0 +1,11 @@
+columns:[
+{
+allowNull:false,
+creationOrderIndex:0,
+dataType:-9,
+length:64,
+name:"opentape"
+}
+],
+name:"sysopentapes",
+tableType:1

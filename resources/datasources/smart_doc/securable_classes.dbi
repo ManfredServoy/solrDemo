@@ -1,0 +1,17 @@
+columns:[
+{
+allowNull:true,
+creationOrderIndex:1,
+dataType:4,
+name:"_class"
+},
+{
+allowNull:true,
+creationOrderIndex:0,
+dataType:-9,
+length:60,
+name:"class_desc"
+}
+],
+name:"securable_classes",
+tableType:1

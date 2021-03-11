@@ -1,0 +1,16 @@
+columns:[
+{
+allowNull:false,
+creationOrderIndex:1,
+dataType:5,
+name:"trace_column_id"
+},
+{
+allowNull:false,
+creationOrderIndex:0,
+dataType:5,
+name:"trace_event_id"
+}
+],
+name:"trace_event_bindings",
+tableType:1

@@ -1,0 +1,17 @@
+columns:[
+{
+allowNull:false,
+creationOrderIndex:1,
+dataType:-9,
+length:4000,
+name:"namespace"
+},
+{
+allowNull:false,
+creationOrderIndex:0,
+dataType:4,
+name:"xml_component_id"
+}
+],
+name:"xml_schema_wildcard_namespaces",
+tableType:1

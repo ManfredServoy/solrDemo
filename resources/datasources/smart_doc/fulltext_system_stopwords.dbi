@@ -1,0 +1,17 @@
+columns:[
+{
+allowNull:false,
+creationOrderIndex:1,
+dataType:4,
+name:"language_id"
+},
+{
+allowNull:true,
+creationOrderIndex:0,
+dataType:-9,
+length:64,
+name:"stopword"
+}
+],
+name:"fulltext_system_stopwords",
+tableType:1

@@ -1,0 +1,17 @@
+columns:[
+{
+allowNull:false,
+creationOrderIndex:1,
+dataType:4,
+name:"feature_id"
+},
+{
+allowNull:true,
+creationOrderIndex:0,
+dataType:-9,
+length:4000,
+name:"feature_name"
+}
+],
+name:"dm_db_persisted_sku_features",
+tableType:1

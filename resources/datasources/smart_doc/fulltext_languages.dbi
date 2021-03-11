@@ -1,0 +1,17 @@
+columns:[
+{
+allowNull:false,
+creationOrderIndex:0,
+dataType:4,
+name:"lcid"
+},
+{
+allowNull:false,
+creationOrderIndex:1,
+dataType:-9,
+length:128,
+name:"name"
+}
+],
+name:"fulltext_languages",
+tableType:1

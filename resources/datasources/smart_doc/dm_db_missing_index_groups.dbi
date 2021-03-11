@@ -1,0 +1,16 @@
+columns:[
+{
+allowNull:false,
+creationOrderIndex:0,
+dataType:4,
+name:"index_group_handle"
+},
+{
+allowNull:false,
+creationOrderIndex:1,
+dataType:4,
+name:"index_handle"
+}
+],
+name:"dm_db_missing_index_groups",
+tableType:1
