@@ -76,6 +76,7 @@ function processCallback(result) {
 	var solrfolder = plugins.SmartDoc.serverFolder
 	var filepath = foundset.getSelectedRecord().newname
 	plugins.file.deleteFile(solrfolder + "/" + filepath)
+	
 }
 
 /**

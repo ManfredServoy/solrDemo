@@ -1,4 +1,18 @@
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"F1A7BB59-CDE0-495F-BC09-71396A96AF38"}
+ */
+var queryString = null;
+
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"E509CB13-AA89-40F5-BCA3-8121298B6D56"}
+ */
+var indexPath = "/Users/manfredwitteman/Downloads/testFiles";
+
+/**
  * @type {Number}
  *
  * @properties={typeid:35,uuid:"CB38C584-C49F-4861-89C9-CB0C3A13D332",variableType:4}
@@ -13,29 +27,15 @@ var onlyNew = 0;
 var subPath = "";
 
 /**
- * @param{JSUpload} upload
- *
- * @properties={typeid:24,uuid:"C3A09830-7104-4302-AD22-71B051D47E7E"}
- */
-function storefile(upload) {
-	//var location = plugins.SmartDoc.serverFolder
-	var location = plugins.file.getDefaultUploadLocation()
-	application.output(location)
-	var serverfile = plugins.file.createFile(location + "/" + upload.name);
-	plugins.file.writeFile(serverfile, upload.getBytes())
-
-}
-
-/**
- * @param {JSEvent} event
- *
- * @properties={typeid:24,uuid:"3C2E3076-3C06-49F7-BAF5-408C4603C408"}
  * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"2F89EB29-D231-4353-BA04-EFF6612B5E12"}
  */
-function onAction(event) {
+function createIndex(){
+	var accepted = ["html", "txt", "pdf", "docx", "doc"]
+	
+	
 	foundset.loadAllRecords()
-	//	application.output("SmartDoc plugin v"+plugins.SmartDoc.getVersion());
-
 	// reset feedback window previous results:
 	forms.results.feedback = '';
 
@@ -46,7 +46,7 @@ function onAction(event) {
 		// the callback method that will save the results in the database
 		callback: forms.results.processCallback,
 		// the accepted extensions (if not provided, everything goes!)
-		// accepted: ["html", "txt", "pdf"],
+		accepted: accepted,
 		// if true, will trim all double spacing/CR/LF/Tabs (can be overriden at the document level):
 		trimUnwantedSpaces: true,
 		// a rule or an array of rules to be used globally,
@@ -55,7 +55,7 @@ function onAction(event) {
 		// applied in sequence in the order provided
 		// (rules can also be added at the document level):
 		replaceRules: { pattern: "^\\d+ *|\\n\\d+ *", replacement: "" },
-		// set the newPath to be used (can be overriden per document):
+		// set the newPath to be used (can be overridden per document):
 		newPath: getSubPath(),
 		// creates a blank array (to be filled by later loops:
 		documents: []
@@ -114,39 +114,24 @@ function onAction(event) {
 //		}
 //	}
 
-	var uploads = plugins.file.getFolderContents("G://Dossiers//2018//2018061201")
-	
-	
-	//var uploads = elements.multifileupload_1.getFiles()
+	var uploads = plugins.file.getFolderContents(indexPath)
 	if (uploads.length > 0) {
-		// we iterate on all the files:
 		for (var i = 0; i < uploads.length; i++) {
 			var upload = uploads[i];
-			//var uploadName = upload.name
-			
-			//var file = plugins.file.convertToJSFile(plugins.file.getDefaultUploadLocation() + '/' + uploadName);
-			// search if this file was not already processed:
 			if (foundset.find()) {
-				foundset.path = upload
+				foundset.path = upload.getName()
+				var ext = foundset.path.split('.').pop()
 				count = foundset.search()
-				if (count == 0) {
+				if (count == 0 && accepted.indexOf(ext)>-1) {
 					// that's a new one, let's create a record to hold the result:
 					var fileRecord = foundset.getRecord(foundset.newRecord())
 					databaseManager.saveData(fileRecord);
+					params.documents.push({ id: fileRecord.id, file: upload, newName: upload });
 				} else {
 					// there was one already
 					fileRecord = foundset.getRecord(1)
 				}
 			}
-
-			// split the fileName to get the extension:
-//			var nameAndExtension = file.getName().split("\.");
-//			// compute a new name:
-//			var setName = "uploadedFile_" + (i + 1) + "." + nameAndExtension[1];
-//			// feed the documents array with a new object to be processed:
-//			
-//			var filepath = plugins.file.getDefaultUploadLocation() + "/" + file.getName()
-			params.documents.push({ id: fileRecord.id, file: upload, newName: upload });
 		}
 	}
 
@@ -155,11 +140,12 @@ function onAction(event) {
 
 	// Submit document(s) to the indexing process, contained in JS Object with the parameters:
 	plugins.SmartDoc.submit(params);
-
+	
 }
 
 /**
  * @properties={typeid:24,uuid:"49AF4173-BCA5-4E8D-B55B-9A99C05D5CC3"}
+ * @return {String}
  */
 function getSubPath() {
 	if (subPath) {
@@ -186,19 +172,45 @@ function onFileUploaded(upload) {
 }
 
 /**
- * @properties={typeid:24,uuid:"0FD02563-0189-44A6-BF77-61C323F677D2"}
+ * @param {JSEvent} event
+ * @private
+ *
+ * @properties={typeid:24,uuid:"376C2823-C60F-4115-9FF6-22FB3949489B"}
  */
-function resetUploader(){
-	elements.multifileupload_1.reset()
+function onActionShowAdvancedSearch(event) {
+	forms.query.controller.show();
+}
+
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"2780C685-9F25-4FED-AD68-E5CEBC3C6278"}
+ */
+function onActionReset(event) {
+	foundset.loadAllRecords()
+	foundset.deleteAllRecords()
+	plugins.SmartDoc.removeAll()
 }
 
 /**
  * @param {JSEvent} event
  *
- * @private
+ * @protected
  *
- * @properties={typeid:24,uuid:"376C2823-C60F-4115-9FF6-22FB3949489B"}
+ * @properties={typeid:24,uuid:"4B37D35E-82D5-4F2C-86AD-D5768C2E7F8D"}
  */
-function onAction1(event) {
-	forms.query.controller.show();
+function onActionCreateIndex(event) {
+	createIndex()
+
+}
+
+/**
+ * @properties={typeid:24,uuid:"DF74AD72-4268-4120-9D5F-8B1B74B7FB6E"}
+ */
+function onActionFind() {
+	query = "summary:java\ncontent:*" + queryString + "*";
+	var results = search()
+	var qb = datasources.db.smart_doc.results.createSelect();
+	qb.where.add(qb.columns.id.isin(results))
+	foundset.loadRecords(qb)
 }
