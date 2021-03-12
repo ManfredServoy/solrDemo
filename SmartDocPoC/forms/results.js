@@ -66,11 +66,7 @@ function processCallback(result) {
 	if (result.isLastDocument()) {
 		var finished = "Finished!\nTotal process time: "+total+"ms\n";
 		feedback += finished;
-		application.output(finished);
-		//application.closeForm();
-		//forms.query.controller.show();
 		foundset.loadAllRecords()
-		forms.maing.resetUploader()
 	}
 	
 	var solrfolder = plugins.SmartDoc.serverFolder

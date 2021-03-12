@@ -10,7 +10,7 @@ var queryString = null;
  *
  * @properties={typeid:35,uuid:"E509CB13-AA89-40F5-BCA3-8121298B6D56"}
  */
-var indexPath = "/Users/manfredwitteman/Downloads/testFiles";
+var indexPath = ""
 
 /**
  * @type {Number}
@@ -31,10 +31,9 @@ var subPath = "";
  *
  * @properties={typeid:24,uuid:"2F89EB29-D231-4353-BA04-EFF6612B5E12"}
  */
-function createIndex(){
+function createIndex() {
 	var accepted = ["html", "txt", "pdf", "docx", "doc"]
-	
-	
+
 	foundset.loadAllRecords()
 	// reset feedback window previous results:
 	forms.results.feedback = '';
@@ -62,57 +61,57 @@ function createIndex(){
 	}
 	var count;
 	// get a foundset from the 'urls' table:
-//	var db = databaseManager.getDataSourceServerName(controller.getDataSource());
-//	var fs = databaseManager.getFoundSet(db, 'urls');
-//	fs.loadAllRecords();
-//
-//	// iterate on the urls to add to the params object
-//	for (var index = 1; index <= databaseManager.getFoundSetCount(fs); index++) {
-//		fs.setSelectedIndex(index);
-//		var isNew = true;
-//		// we use a find to determine if we need to insert or update in the database:
-//		if (foundset.find()) {
-//			foundset.id = fs.id;
-//			count = foundset.search();
-//			if (count == 0) {
-//				// there's no record with that id, so we create one
-//				foundset.newRecord(1, true);
-//				// and save it to get its id:
-//				databaseManager.saveData(foundset.getSelectedRecord());
-//			} else {
-//				isNew = false;
-//				foundset.setSelectedIndex(1);
-//			}
-//		}
-//		if (onlyNew == 0 || isNew) {
-//			// we feed the documents array with a new object to be processed:
-//			var obj = { id: foundset.id, url: fs.url };
-//			// if a new path is set at the document level pass it into the object:
-//			if (fs.new_path) {
-//				obj.newPath = fs.new_path;
-//			}
-//			// if a new name is set at the document level it will override the renaming scheme:
-//			if (fs.new_name) {
-//				obj.newName = fs.new_name;
-//			}
-//			// if a login/password is provided for that url, add it to the document object:
-//			if (fs.url_login && fs.url_pass) {
-//				obj.login = fs.url_login;
-//				obj.password = fs.url_pass;
-//			}
-//			// the 'extras' object can hold any property/value pair.
-//			// useful to add some custom values to the Solr index along with the document
-//			obj.extras = { };
-//			// push extras parameters if needed
-//			if (fs.extra_i) {
-//				obj.extras.extra_i = fs.extra_i;
-//			}
-//			if (fs.extra_t) {
-//				obj.extras.extra_t = fs.extra_t;
-//			}
-//			params.documents.push(obj);
-//		}
-//	}
+	//	var db = databaseManager.getDataSourceServerName(controller.getDataSource());
+	//	var fs = databaseManager.getFoundSet(db, 'urls');
+	//	fs.loadAllRecords();
+	//
+	//	// iterate on the urls to add to the params object
+	//	for (var index = 1; index <= databaseManager.getFoundSetCount(fs); index++) {
+	//		fs.setSelectedIndex(index);
+	//		var isNew = true;
+	//		// we use a find to determine if we need to insert or update in the database:
+	//		if (foundset.find()) {
+	//			foundset.id = fs.id;
+	//			count = foundset.search();
+	//			if (count == 0) {
+	//				// there's no record with that id, so we create one
+	//				foundset.newRecord(1, true);
+	//				// and save it to get its id:
+	//				databaseManager.saveData(foundset.getSelectedRecord());
+	//			} else {
+	//				isNew = false;
+	//				foundset.setSelectedIndex(1);
+	//			}
+	//		}
+	//		if (onlyNew == 0 || isNew) {
+	//			// we feed the documents array with a new object to be processed:
+	//			var obj = { id: foundset.id, url: fs.url };
+	//			// if a new path is set at the document level pass it into the object:
+	//			if (fs.new_path) {
+	//				obj.newPath = fs.new_path;
+	//			}
+	//			// if a new name is set at the document level it will override the renaming scheme:
+	//			if (fs.new_name) {
+	//				obj.newName = fs.new_name;
+	//			}
+	//			// if a login/password is provided for that url, add it to the document object:
+	//			if (fs.url_login && fs.url_pass) {
+	//				obj.login = fs.url_login;
+	//				obj.password = fs.url_pass;
+	//			}
+	//			// the 'extras' object can hold any property/value pair.
+	//			// useful to add some custom values to the Solr index along with the document
+	//			obj.extras = { };
+	//			// push extras parameters if needed
+	//			if (fs.extra_i) {
+	//				obj.extras.extra_i = fs.extra_i;
+	//			}
+	//			if (fs.extra_t) {
+	//				obj.extras.extra_t = fs.extra_t;
+	//			}
+	//			params.documents.push(obj);
+	//		}
+	//	}
 
 	var uploads = plugins.file.getFolderContents(indexPath)
 	if (uploads.length > 0) {
@@ -122,7 +121,7 @@ function createIndex(){
 				foundset.path = upload.getName()
 				var ext = foundset.path.split('.').pop()
 				count = foundset.search()
-				if (count == 0 && accepted.indexOf(ext)>-1) {
+				if (count == 0 && accepted.indexOf(ext) > -1) {
 					// that's a new one, let's create a record to hold the result:
 					var fileRecord = foundset.getRecord(foundset.newRecord())
 					databaseManager.saveData(fileRecord);
@@ -140,7 +139,7 @@ function createIndex(){
 
 	// Submit document(s) to the indexing process, contained in JS Object with the parameters:
 	plugins.SmartDoc.submit(params);
-	
+
 }
 
 /**
@@ -213,4 +212,21 @@ function onActionFind() {
 	var qb = datasources.db.smart_doc.results.createSelect();
 	qb.where.add(qb.columns.id.isin(results))
 	foundset.loadRecords(qb)
+}
+
+/**
+ * Callback method when form is (re)loaded.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @protected
+ *
+ * @properties={typeid:24,uuid:"3AAE8E63-3B61-496B-AF6E-CCDD16785884"}
+ */
+function onLoad(event) {
+	indexPath = "G://Dossiers//2018//2018061201"
+
+	if (application.getOSName().indexOf('Windows') == -1) {
+		indexPath = "/Users/manfredwitteman/Downloads/testFiles";
+	}
 }

@@ -1,4 +1,10 @@
 customProperties:"formComponent:false,\
+methods:{\
+onLoadMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+},\
 useCssPosition:true",
 dataSource:"db:/smart_doc/results",
 encapsulation:108,
@@ -167,7 +173,7 @@ uuid:"F04C424F-A208-4B12-8A7B-98FB19743C9B"
 ],
 name:"maing",
 navigatorID:"-1",
-onLoadMethodID:"-1",
+onLoadMethodID:"3AAE8E63-3B61-496B-AF6E-CCDD16785884",
 showInMenu:true,
 size:"831,480",
 typeid:3,
