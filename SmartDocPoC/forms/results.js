@@ -38,6 +38,7 @@ function processCallback(result) {
 	}
 	
 	// get all the values returned:
+	/**@type {Array<String>}*/
 	var keys = result.getKeys();
 	for (var i = 0; i < keys.length; i++) {
 		if (keys[i] != "summary" && keys[i] != "content") {
