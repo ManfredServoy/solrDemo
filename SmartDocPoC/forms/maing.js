@@ -26,13 +26,14 @@ var onlyNew = 0;
  */
 var subPath = "";
 
+
 /**
  * @AllowToRunInFind
  *
  * @properties={typeid:24,uuid:"2F89EB29-D231-4353-BA04-EFF6612B5E12"}
  */
 function createIndex() {
-	var accepted = ["html", "txt", "pdf", "docx", "doc"]
+	var accepted = ["htm", "html", "txt", "pdf", "docx", "doc", "msg", "eml"]
 
 	foundset.loadAllRecords()
 	// reset feedback window previous results:
@@ -59,7 +60,7 @@ function createIndex() {
 		// creates a blank array (to be filled by later loops:
 		documents: []
 	}
-	var count;
+	
 	// get a foundset from the 'urls' table:
 	//	var db = databaseManager.getDataSourceServerName(controller.getDataSource());
 	//	var fs = databaseManager.getFoundSet(db, 'urls');
@@ -113,30 +114,40 @@ function createIndex() {
 	//		}
 	//	}
 
-	var uploads = plugins.file.getFolderContents(indexPath)
+	// Get all the folder content recursively 
+	var uploads = scopes.file.getContent(indexPath)
+	
+	// Get count records
+	var _sExistingRecCount = databaseManager.getDataSetByQuery("smart_doc","SELECT COUNT(*) FROM results",null,1)
+	// Query all the records
+	var _aExistingRec = databaseManager.getDataSetByQuery("smart_doc","SELECT path FROM results",null,_sExistingRecCount.getColumnAsArray(1)[0])
+	// Make an array of _aExistingRec
+	var _aExistingArray = _aExistingRec.getColumnAsArray(1);
+	
+	var _bSubmitted = false;
+	// Loop through the missing objects
 	if (uploads.length > 0) {
 		for (var i = 0; i < uploads.length; i++) {
 			var upload = uploads[i];
-			if (foundset.find()) {
-				foundset.path = upload.getName()
-				var ext = foundset.path.split('.').pop()
-				count = foundset.search()
-				if (count == 0 && accepted.indexOf(ext) > -1) {
+			if(_aExistingArray.indexOf(upload.getPath()) == -1){
+				application.output('Eigen path: '+ upload.getPath())
+				var ext = upload.getName().split('.').pop()
+				if (accepted.indexOf(ext) > -1) {
 					// that's a new one, let's create a record to hold the result:
 					var fileRecord = foundset.getRecord(foundset.newRecord())
 					databaseManager.saveData(fileRecord);
 					params.documents.push({ id: fileRecord.id, file: upload, newName: upload });
-				} else {
-					// there was one already
-					fileRecord = foundset.getRecord(1)
-				}
+					_bSubmitted = true;
+				} 
 			}
 		}
 	}
 
 	// show our feedback window:
 	application.showFormInDialog(forms.results, 10, 10, -1, -1, "Results", true, false, "resultWindow", false);
-
+	if(!_bSubmitted){
+		forms.results.feedback = 'Finished!'
+	}
 	// Submit document(s) to the indexing process, contained in JS Object with the parameters:
 	plugins.SmartDoc.submit(params);
 
