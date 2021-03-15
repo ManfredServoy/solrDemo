@@ -130,19 +130,24 @@ function createIndex() {
 	// Get all the folder content recursively 
 	var uploads = scopes.file.getContent(indexPath)
 	
-	// Get count records
-	var _sExistingRecCount = databaseManager.getDataSetByQuery("smart_doc","SELECT COUNT(*) FROM results",null,1)
 	// Query all the records
-	var _aExistingRec = databaseManager.getDataSetByQuery("smart_doc","SELECT path FROM results",null,_sExistingRecCount.getColumnAsArray(1)[0])
-	// Make an array of _aExistingRec
-	var _aExistingArray = _aExistingRec.getColumnAsArray(1);
+	/** @type {JSDataSet<path:String>} */
+	var _dsExistingRec = databaseManager.getDataSetByQuery("smart_doc","SELECT path FROM results",null,-1)
+	
+	var _oExists = {};
+	
+	for (var r = 1; r <= _dsExistingRec.getMaxRowIndex(); r++) {
+		_dsExistingRec.rowIndex = r;
+		_oExists[_dsExistingRec.path] = true;
+	}
+	
 	
 	var _bSubmitted = false;
 	// Loop through the missing objects
 	if (uploads.length > 0) {
 		for (var i = 0; i < uploads.length; i++) {
 			var upload = uploads[i];
-			if(_aExistingArray.indexOf(upload.getPath()) == -1){
+			if(!_oExists[upload.getPath()]){
 				application.output('Eigen path: '+ upload.getPath())
 				var ext = upload.getName().split('.').pop()
 				if (accepted.indexOf(ext) > -1) {
