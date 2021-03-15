@@ -15,13 +15,6 @@ var dowloadClass = "fa fa-download";
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"F1A7BB59-CDE0-495F-BC09-71396A96AF38"}
- */
-var queryString = null;
-
-/**
- * @type {String}
- *
  * @properties={typeid:35,uuid:"E509CB13-AA89-40F5-BCA3-8121298B6D56"}
  */
 var indexPath = ""
@@ -75,7 +68,7 @@ function createIndex() {
 		// creates a blank array (to be filled by later loops:
 		documents: []
 	}
-	
+
 	// get a foundset from the 'urls' table:
 	//	var db = databaseManager.getDataSourceServerName(controller.getDataSource());
 	//	var fs = databaseManager.getFoundSet(db, 'urls');
@@ -129,28 +122,27 @@ function createIndex() {
 	//		}
 	//	}
 
-	// Get all the folder content recursively 
+	// Get all the folder content recursively
 	var uploads = scopes.file.getContent(indexPath)
-	
+
 	// Query all the records
 	/** @type {JSDataSet<path:String>} */
-	var _dsExistingRec = databaseManager.getDataSetByQuery("smart_doc","SELECT path FROM results",null,-1)
-	
-	var _oExists = {};
-	
+	var _dsExistingRec = databaseManager.getDataSetByQuery("smart_doc", "SELECT path FROM results", null, -1)
+
+	var _oExists = { };
+
 	for (var r = 1; r <= _dsExistingRec.getMaxRowIndex(); r++) {
 		_dsExistingRec.rowIndex = r;
 		_oExists[_dsExistingRec.path] = true;
 	}
-	
-	
+
 	var _bSubmitted = false;
 	// Loop through the missing objects
 	if (uploads.length > 0) {
 		for (var i = 0; i < uploads.length; i++) {
 			var upload = uploads[i];
-			if(!_oExists[upload.getPath()]){
-				application.output('Eigen path: '+ upload.getPath())
+			if (!_oExists[upload.getPath()]) {
+				application.output('Eigen path: ' + upload.getPath())
 				var ext = upload.getName().split('.').pop()
 				if (accepted.indexOf(ext) > -1) {
 					// that's a new one, let's create a record to hold the result:
@@ -158,14 +150,14 @@ function createIndex() {
 					databaseManager.saveData(fileRecord);
 					params.documents.push({ id: fileRecord.id, file: upload, newName: upload });
 					_bSubmitted = true;
-				} 
+				}
 			}
 		}
 	}
 
 	// show our feedback window:
 	application.showFormInDialog(forms.results, 10, 10, -1, -1, "Results", true, false, "resultWindow", false);
-	if(!_bSubmitted){
+	if (!_bSubmitted) {
 		forms.results.feedback = 'Finished!'
 	}
 	// Submit document(s) to the indexing process, contained in JS Object with the parameters:
@@ -173,12 +165,11 @@ function createIndex() {
 
 }
 
-
 /**
  * @properties={typeid:24,uuid:"4C405951-9D86-4984-BD30-75235F097B78"}
  */
-function updateDoc(){
-	
+function updateDoc() {
+
 	var params = {
 		defaultLogin: 'myLogin',
 		defaultPassword: 'myPassword',
@@ -199,12 +190,11 @@ function updateDoc(){
 		// creates a blank array (to be filled by later loops:
 		documents: []
 	}
-	
+
 	params.documents.push({ id: "11594", file: "G://Dossiers/2021/2021014001/test.doc", newName: "G://Dossiers/2021/2021014001/test.doc" });
-	
-	
+
 	plugins.SmartDoc.submit(params);
-	
+
 }
 
 /**
@@ -270,13 +260,23 @@ function onActionCreateIndex(event) {
 
 /**
  * @properties={typeid:24,uuid:"DF74AD72-4268-4120-9D5F-8B1B74B7FB6E"}
+ * @AllowToRunInFind
  */
 function onActionFind() {
-	query = "summary:java\ncontent:*" + queryString + "*";
-	var results = search()
-	var qb = datasources.db.smart_doc.results.createSelect();
-	qb.where.add(qb.columns.id.isin(results))
-	foundset.loadRecords(qb)
+	if (queryString.length > 0) {
+		query = "summary:java\ncontent:*" + queryString + "*";
+		var results = search()
+		var qb = datasources.db.smart_doc.results.createSelect();
+		qb.where.add(qb.columns.id.isin(results))
+		foundset.loadRecords(qb)
+	} else {
+		if(foundset.find()){
+			foundset.author = "manfred"
+			foundset.search()
+			
+		}
+		
+	}
 }
 
 /**
@@ -312,7 +312,7 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"B5C4F0A2-236B-4020-9F14-BF8CAB44FC2B"}
  */
 function onCellClick(foundsetindex, columnindex, record, event, columnid) {
-	if (columnindex == 3){
+	if (columnindex == 3) {
 		download(record)
 	}
 }
@@ -323,9 +323,9 @@ function onCellClick(foundsetindex, columnindex, record, event, columnid) {
  *
  * @properties={typeid:24,uuid:"B5042A5A-E4F1-4275-937B-74C96D52E9D1"}
  */
-function download(file){
-	var f  = plugins.file.convertToJSFile(file.path)
+function download(file) {
+	var f = plugins.file.convertToJSFile(file.path)
 	//send the result back to the browser where the standard Save Download dialog will be displayed
-	plugins.file.writeFile(file.originalname,f.getBytes())
-	
+	plugins.file.writeFile(file.originalname, f.getBytes())
+
 }

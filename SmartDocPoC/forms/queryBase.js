@@ -5,6 +5,15 @@
  */
 var debug = 0;
 
+
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"791C91BE-2DA6-4293-8A77-5B3422DDB54D"}
+ */
+var queryString = null;
+
+
 /**
  * @type {String}
  *
@@ -181,9 +190,12 @@ function search() {
 
 		// we iterate on that highlighting property which contains one property key (the id) for each document
 		// the value of that property will be an object with one property for each of the hiliteFields properties
-		for (var id in res.highlighting) {
+		
+		var higlighting = JSON.parse(JSON.stringify(res.highlighting)) 
+		
+		for (var id in higlighting) {
 			hiliteResult += '<table><tr><td colspan="2">' + id + '</td></tr>';
-			var obj = res.highlighting[id];
+			var obj = higlighting[id];
 			if (obj) {
 				for (var field in obj) {
 					hiliteResult += '<tr><td>' + field + '</td><td>' + obj[field][0] + '</td></tr>';
@@ -194,7 +206,7 @@ function search() {
 		hiliteResult += "</body></html>";
 	}
 
-	//application.output('returning '  + docIDs)
+	application.output('returning '  + docIDs)
 	return docIDs
 }
 
@@ -207,15 +219,18 @@ function setSnippets(snippets) {
 	snippets = JSON.parse(JSON.stringify(snippets)) //should not be necessary 
 
 	var hfs = datasources.mem.highlights.getFoundSet()
+	hfs.loadAllRecords()
+	hfs.deleteAllRecords()
 	
 	for (var key in snippets) {
+		var summary = ""
 		if (!snippets.hasOwnProperty(key)) continue;
 		var summaryObj = snippets[key]['summary']
 		try{ //should not be necessary 
 			
 			var jstring = JSON.stringify(summaryObj) //should not be necessary 
 			var sum = JSON.parse(jstring) //should not be necessary 
-			var summary = sum[0] 
+			summary = sum[0] 
 		    }
 		    catch(errror){
 		       application.output("Not a JSON response")
@@ -224,9 +239,7 @@ function setSnippets(snippets) {
 		if (summary) {
 			var snippet = hfs.getRecord(hfs.newRecord())
 			snippet.id = parseInt(key)
-			snippet.text =  summary
-			application.output(summary) // output as expected
-			application.output(snippet.text) //output: null
+			snippet.snippet =  summary
 		}
 	}
 	
