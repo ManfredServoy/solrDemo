@@ -46,7 +46,7 @@ var subPath = "";
  * @properties={typeid:24,uuid:"2F89EB29-D231-4353-BA04-EFF6612B5E12"}
  */
 function createIndex() {
-	var accepted = ["htm", "html", "txt", "pdf", "docx", "doc", "msg", "eml"]
+	var accepted = ["htm", "html", "txt", "pdf", "docx", "doc", "docm", "msg", "eml"]
 
 	foundset.loadAllRecords()
 	// reset feedback window previous results:

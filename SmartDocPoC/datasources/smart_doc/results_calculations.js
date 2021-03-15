@@ -3,7 +3,8 @@
  */
 function fileIcon()
 {
-	switch (extension.toUpperCase()) {
+	var _sExt = extension||'';
+	switch (_sExt.toUpperCase()) {
 	case "PDF":
 		return "fa fa-file-pdf-o icon"
 		break;
