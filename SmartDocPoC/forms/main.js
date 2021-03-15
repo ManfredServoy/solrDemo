@@ -46,6 +46,7 @@ var subPath = "";
  * @properties={typeid:24,uuid:"2F89EB29-D231-4353-BA04-EFF6612B5E12"}
  */
 function createIndex() {
+
 	var accepted = ["htm", "html", "txt", "pdf", "docx", "doc", "docm", "msg", "eml"]
 
 	foundset.loadAllRecords()
@@ -169,6 +170,40 @@ function createIndex() {
 	// Submit document(s) to the indexing process, contained in JS Object with the parameters:
 	plugins.SmartDoc.submit(params);
 
+}
+
+
+/**
+ * @properties={typeid:24,uuid:"4C405951-9D86-4984-BD30-75235F097B78"}
+ */
+function updateDoc(){
+	
+	var params = {
+		defaultLogin: 'myLogin',
+		defaultPassword: 'myPassword',
+		// the callback method that will save the results in the database
+		callback: forms.results.processCallback,
+		// the accepted extensions (if not provided, everything goes!)
+		accepted: accepted,
+		// if true, will trim all double spacing/CR/LF/Tabs (can be overriden at the document level):
+		trimUnwantedSpaces: true,
+		// a rule or an array of rules to be used globally,
+		// each one being an object with a Regexp pattern (java style)
+		// and a replacement string
+		// applied in sequence in the order provided
+		// (rules can also be added at the document level):
+		replaceRules: { pattern: "^\\d+ *|\\n\\d+ *", replacement: "" },
+		// set the newPath to be used (can be overridden per document):
+		newPath: getSubPath(),
+		// creates a blank array (to be filled by later loops:
+		documents: []
+	}
+	
+	params.documents.push({ id: "11594", file: "G://Dossiers/2021/2021014001/test.doc", newName: "G://Dossiers/2021/2021014001/test.doc" });
+	
+	
+	plugins.SmartDoc.submit(params);
+	
 }
 
 /**
