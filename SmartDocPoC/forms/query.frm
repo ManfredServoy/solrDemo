@@ -85,7 +85,7 @@ uuid:"36E25AD1-8119-4C0B-91F8-81D84BF0315D"
 anchors:3,
 location:"500,10",
 mediaOptions:14,
-onActionMethodID:"2E53BDD5-502A-47E6-8609-1A809DF9B510",
+onActionMethodID:"CFDABA69-9722-4644-99BB-CA51395A087E",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"140,20",

@@ -112,27 +112,26 @@ var start = 0;
  */
 function onActionSearch(event) {
 	search()
-	
-}
 
+}
 
 /**
  * @properties={typeid:24,uuid:"0F503E84-6BAD-43F3-81AE-38C7A60F190B"}
  * @return {Array<String>}
  */
-function search(){
-	
-	var docIDs= []
+function search() {
+
+	var docIDs = []
 	// reset search result variables:
 	found = 0;
 	returned = 0;
 	result = "";
 	hiliteResult = "";
-	
-	// setup the parameters object 
-	var params = { 
-		query: query, 
-		filters: filters, 
+
+	// setup the parameters object
+	var params = {
+		query: query,
+		filters: filters,
 		start: start,
 		rows: rows,
 		fields: fields,
@@ -143,29 +142,29 @@ function search(){
 		hiliteFragSize: hiliteFragSize,
 		sortBy: sortBy
 	};
-	
+
 	//application.output(params)
 	// launch
 	var res = plugins.SmartDoc.query(params);
-	application.output(res)
 	if (res == null) {
 		// maybe the Solr server is unreachable?
-		plugins.dialogs.showErrorDialog("Error","Your query returned a null result, check servoy_log.txt for errors","OK");
+		plugins.dialogs.showErrorDialog("Error", "Your query returned a null result, check servoy_log.txt for errors", "OK");
 		return null;
 	}
+
 	// res is a JavaScript Object with a few properties, the main one being 'response', which is itself an Object:
 	found = res.response.numFound;
 	result += '<html><head></head><body>';
 	// inside the response property Object, we have some property, the main one being 'docs' which is an Array of result Objects
 	returned = res.response.docs.length;
 	// we iterate on the docs Array:
-	for(var i in res.response.docs) {
+	for (var i in res.response.docs) {
 		result += '<table>';
 		var doc = res.response.docs[i];
-		
-		// this little trick is to make sure the id is the first one to appear 
+
+		// this little trick is to make sure the id is the first one to appear
 		// (the properties are not guaranteed to be in a consistent order):
-		result += '<tr><td>id</td><td>' + doc.id +'</td></tr>';
+		result += '<tr><td>id</td><td>' + doc.id + '</td></tr>';
 		docIDs.push(doc.id)
 		// we iterate on the properties of the document result:
 		for (var d in doc) {
@@ -177,12 +176,13 @@ function search(){
 	}
 	if (hilite == 1) {
 		// in that case we will have a property 'highlighting' in our result Object
+		setSnippets(res.highlighting)
 		hiliteResult = '<html><head><style type="text/css">em { font-weight: bold; font-style: plain; color: #FF3333; }</style></head><body>';
-		
+
 		// we iterate on that highlighting property which contains one property key (the id) for each document
 		// the value of that property will be an object with one property for each of the hiliteFields properties
-		for(var id in res.highlighting) {
-			hiliteResult += '<table><tr><td colspan="2">'+id+'</td></tr>';
+		for (var id in res.highlighting) {
+			hiliteResult += '<table><tr><td colspan="2">' + id + '</td></tr>';
 			var obj = res.highlighting[id];
 			if (obj) {
 				for (var field in obj) {
@@ -193,16 +193,42 @@ function search(){
 		}
 		hiliteResult += "</body></html>";
 	}
+
+	//application.output('returning '  + docIDs)
 	return docIDs
 }
 
 /**
- * Perform the element default action.
+ * @param snippets
  *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"2E53BDD5-502A-47E6-8609-1A809DF9B510"}
+ * @properties={typeid:24,uuid:"67F0EBF6-0E60-4E9F-8E30-EAC4F98AEB75"}
  */
-function onActionBack(event) {
-	forms.maing.controller.show();
+function setSnippets(snippets) {
+	snippets = JSON.parse(JSON.stringify(snippets)) //should not be necessary 
+
+	var hfs = datasources.mem.highlights.getFoundSet()
+	
+	for (var key in snippets) {
+		if (!snippets.hasOwnProperty(key)) continue;
+		var summaryObj = snippets[key]['summary']
+		try{ //should not be necessary 
+			
+			var jstring = JSON.stringify(summaryObj) //should not be necessary 
+			var sum = JSON.parse(jstring) //should not be necessary 
+			var summary = sum[0] 
+		    }
+		    catch(errror){
+		       application.output("Not a JSON response")
+		    }
+		
+		if (summary) {
+			var snippet = hfs.getRecord(hfs.newRecord())
+			snippet.id = parseInt(key)
+			snippet.text =  summary
+			application.output(summary) // output as expected
+			application.output(snippet.text) //output: null
+		}
+	}
+	
+	databaseManager.saveData(hfs)
 }

@@ -11,30 +11,6 @@ encapsulation:108,
 extendsID:"C465D8A8-5CF6-4919-A0A7-67008E90CFAA",
 items:[
 {
-cssPosition:"11,-1,-1,546,80,30",
-json:{
-cssPosition:{
-bottom:"-1",
-height:"30",
-left:"546",
-right:"-1",
-top:"11",
-width:"80"
-},
-onActionMethodID:"4C405951-9D86-4984-BD30-75235F097B78",
-size:{
-height:30,
-width:80
-},
-text:"Button"
-},
-name:"button_1",
-size:"80,30",
-typeName:"bootstrapcomponents-button",
-typeid:47,
-uuid:"06935C49-FA73-4082-98D0-3379FAB7A2AB"
-},
-{
 cssPosition:"-1,11,15,-1,136,30",
 json:{
 cssPosition:{
@@ -159,7 +135,7 @@ dataprovider:"title",
 svyUUID:"B176F3C9-5EBC-46C4-8677-613FC3519080"
 },
 {
-dataprovider:"path",
+dataprovider:"results_to_highlights.snippet",
 showAs:"html",
 styleClassDataprovider:"dowloadClass",
 svyUUID:"97CEE3AE-DAE0-4C73-836D-D7BD2CD015D6",
@@ -197,7 +173,7 @@ size:{
 height:30,
 width:80
 },
-text:"Geavanceeerd Zoeken"
+text:"Geavanceerd Zoeken"
 },
 name:"button_AdvancedSearch",
 size:"80,30",
