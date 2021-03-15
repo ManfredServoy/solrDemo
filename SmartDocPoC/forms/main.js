@@ -47,7 +47,8 @@ var subPath = "";
  */
 function createIndex() {
 
-	var accepted = ["htm", "html", "txt", "pdf", "docx", "doc", "docm", "msg", "eml"]
+	// Return known file extensions
+	var accepted = scopes.file.returnAcceptedFiles();
 
 	foundset.loadAllRecords()
 	// reset feedback window previous results:
