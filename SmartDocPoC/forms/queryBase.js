@@ -183,28 +183,28 @@ function search() {
 		}
 		result += '</table><hr>';
 	}
-	if (hilite == 1) {
-		// in that case we will have a property 'highlighting' in our result Object
-		setSnippets(res.highlighting)
-		hiliteResult = '<html><head><style type="text/css">em { font-weight: bold; font-style: plain; color: #FF3333; }</style></head><body>';
-
-		// we iterate on that highlighting property which contains one property key (the id) for each document
-		// the value of that property will be an object with one property for each of the hiliteFields properties
-		
-		var higlighting = JSON.parse(JSON.stringify(res.highlighting)) 
-		
-		for (var id in higlighting) {
-			hiliteResult += '<table><tr><td colspan="2">' + id + '</td></tr>';
-			var obj = higlighting[id];
-			if (obj) {
-				for (var field in obj) {
-					hiliteResult += '<tr><td>' + field + '</td><td>' + obj[field][0] + '</td></tr>';
-				}
-			}
-			hiliteResult += '</table><hr>';
-		}
-		hiliteResult += "</body></html>";
-	}
+//	if (hilite == 1) {
+//		// in that case we will have a property 'highlighting' in our result Object
+//		setSnippets(res.highlighting)
+//		hiliteResult = '<html><head><style type="text/css">em { font-weight: bold; font-style: plain; color: #FF3333; }</style></head><body>';
+//
+//		// we iterate on that highlighting property which contains one property key (the id) for each document
+//		// the value of that property will be an object with one property for each of the hiliteFields properties
+//		
+//		var higlighting = JSON.parse(JSON.stringify(res.highlighting)) 
+//		
+//		for (var id in higlighting) {
+//			hiliteResult += '<table><tr><td colspan="2">' + id + '</td></tr>';
+//			var obj = higlighting[id];
+//			if (obj) {
+//				for (var field in obj) {
+//					hiliteResult += '<tr><td>' + field + '</td><td>' + obj[field][0] + '</td></tr>';
+//				}
+//			}
+//			hiliteResult += '</table><hr>';
+//		}
+//		hiliteResult += "</body></html>";
+//	}
 
 	application.output('returning '  + docIDs)
 	return docIDs

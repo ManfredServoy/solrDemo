@@ -294,6 +294,8 @@ function onLoad(event) {
 	if (application.getOSName().indexOf('Windows') == -1) {
 		indexPath = "/Users/manfredwitteman/Downloads/testFiles";
 	}
+	
+	testWatcher()
 }
 
 /**
@@ -328,4 +330,41 @@ function download(file) {
 	//send the result back to the browser where the standard Save Download dialog will be displayed
 	plugins.file.writeFile(file.originalname, f.getBytes())
 
+}
+
+
+
+
+
+/**
+ * @type {scopes.watcher.FolderWatcher}
+ *
+ * @properties={typeid:35,uuid:"A7C9B739-1C28-443C-8290-67FF494641F8",variableType:-4}
+ */
+var watcher;
+
+/**
+ * @properties={typeid:24,uuid:"6FAA84A2-067A-4423-A202-CBC82B3A95D6"}
+ */
+function testWatcher() {
+   watcher = new scopes.watcher.FolderWatcher(indexPath, testWatcherCallback, true);
+  // watcher.addFolderToWatch('F:\\temp');
+   watcher.startWatching();
+}
+
+/**
+ * @properties={typeid:24,uuid:"0A35AC63-3DF7-4E50-943E-50024C26D583"}
+ */
+function stopWatcher() {
+   watcher.stopWatching();
+}
+
+/**
+ * @param {plugins.file.JSFile} file
+ * @param {String} event
+ * @param {Number} count
+ * @properties={typeid:24,uuid:"DA1DC248-01EC-4E2C-B7A7-794CFB411B3B"}
+ */
+function testWatcherCallback(file, event, count) {
+   application.output(event + ' (' + count + '): ' + file.getAbsolutePath());
 }
