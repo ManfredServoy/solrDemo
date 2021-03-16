@@ -33,15 +33,15 @@ var total = 0;
 function processCallback(result) {
 	var resultID = result.getValue("id");
 	// show which one is in process:
-	application.output(resultID  + "callback");
+	application.output("Processing " + result.getValue("originalname"));
 		
 	// is it a new record or an existing record?
-	var count = 0;
-	if (foundset.find()) {
-		real_id = resultID;
-		count = foundset.search();
-	}
-	if (count == 0) {
+	
+	var qry = datasources.db.smart_doc.results.createSelect()
+	qry.where.add(qry.columns.real_id.eq(resultID))
+	foundset.loadRecords(qry)
+	
+	if (foundset.getSize() == 0) {
 		// not found, we create it:
 		foundset.newRecord(1,true);
 		var record = foundset.getRecord(foundset.newRecord())

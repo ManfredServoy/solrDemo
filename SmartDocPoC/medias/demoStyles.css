@@ -334,3 +334,7 @@ portal
 	padding: 0pt !important;
 	color: blue;
 }
+.highlight{
+	color: red;
+	font-weight:bolder;
+}
