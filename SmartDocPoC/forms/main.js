@@ -1,4 +1,11 @@
 /**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"99B32E98-46CB-45DC-BFB1-80EDE854E3DD",variableType:4}
+ */
+var shouldMonitor = 0;
+
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"E1635861-2CA9-4D18-B841-0DE72F51ED24"}
@@ -35,10 +42,12 @@ var subPath = "";
 
 /**
  * @AllowToRunInFind
- *
+ * 
  * @properties={typeid:24,uuid:"2F89EB29-D231-4353-BA04-EFF6612B5E12"}
  */
-function createIndex() {
+function createIndex(pathToBeIndexed) {
+	
+	application.output("Starting to index " + pathToBeIndexed)
 
 	// Return known file extensions
 	var accepted = scopes.file.returnAcceptedFiles();
@@ -123,7 +132,7 @@ function createIndex() {
 	//	}
 
 	// Get all the folder content recursively
-	var uploads = scopes.file.getContent(indexPath)
+	var uploads = scopes.file.getContent(pathToBeIndexed)
 
 	// Query all the records
 	/** @type {JSDataSet<path:String>} */
@@ -258,7 +267,7 @@ function onActionReset(event) {
  * @properties={typeid:24,uuid:"4B37D35E-82D5-4F2C-86AD-D5768C2E7F8D"}
  */
 function onActionCreateIndex(event) {
-	createIndex()
+	createIndex(indexPath)
 
 }
 
@@ -275,7 +284,7 @@ function onActionFind() {
 		foundset.loadRecords(qb)
 	} else {
 		if(foundset.find()){
-			foundset.author = "manfred"
+			foundset.author = "manfred" //yes, I want to live forever
 			foundset.search()
 			
 		}
@@ -298,6 +307,7 @@ function onLoad(event) {
 	if (application.getOSName().indexOf('Windows') == -1) {
 		indexPath = "/Users/manfredwitteman/Downloads/testFiles";
 	}
+
 }
 
 /**
@@ -307,7 +317,7 @@ function onLoad(event) {
  *
  * @param {number} foundsetindex
  * @param {number} [columnindex]
- * @param {JSRecord} [record]
+ * @param {JSRecord<db:/smart_doc/results>} [record]
  * @param {JSEvent} [event]
  * @param {string} [columnid]
  *
@@ -332,4 +342,68 @@ function download(file) {
 	//send the result back to the browser where the standard Save Download dialog will be displayed
 	plugins.file.writeFile(file.originalname, f.getBytes())
 
+}
+
+
+
+
+
+/**
+ * @type {scopes.watcher.FolderWatcher}
+ *
+ * @properties={typeid:35,uuid:"A7C9B739-1C28-443C-8290-67FF494641F8",variableType:-4}
+ */
+var watcher;
+
+
+
+/**
+ * @properties={typeid:24,uuid:"0A35AC63-3DF7-4E50-943E-50024C26D583"}
+ */
+function stopWatcher() {
+	plugins.webnotificationsToastr.error("Stopped watching files")
+   watcher.stopWatching();
+}
+
+/**
+ * @properties={typeid:24,uuid:"830328A8-15F1-4216-9800-C9A4ABC82D16"}
+ */
+function startWatcher(){
+  watcher = new scopes.watcher.FolderWatcher(indexPath, testWatcherCallback, true);
+	plugins.webnotificationsToastr.success("Started watching files")
+	watcher.startWatching();
+}
+
+/**
+ * @param {plugins.file.JSFile} file
+ * @param {String} event
+ * @param {Number} count
+ * @properties={typeid:24,uuid:"DA1DC248-01EC-4E2C-B7A7-794CFB411B3B"}
+ */
+function testWatcherCallback(file, event, count) {
+   application.output(event + ' (' + count + '): ' + file.getAbsolutePath());
+   application.output('•••••' + event + '•••••')
+   if (file.isFile() && event == "ENTRY_CREATE"){
+	   forms.main.createIndex(file.getAbsolutePath())
+	   application.output("New file!")
+   }
+   
+}
+
+/**
+ * @param oldValue
+ * @param newValue
+ * @param {JSEvent} event
+ *	
+ * @return {boolean}
+ *
+ * @properties={typeid:24,uuid:"7F966D4E-E97E-45A8-910F-566DF5F8AA0B"}
+ */
+function onDataChangeSwitch(oldValue, newValue, event) {
+	if (newValue == 1){
+		startWatcher()
+	} else {
+		stopWatcher()
+	}
+return false;
 }
