@@ -2,7 +2,7 @@
  * @properties={typeid:35,uuid:"28246891-9F5C-46B0-9755-AC2A5D469789",variableType:-4}
  */
 var _oKnownFiles = {
-	WORD: 	['doc', 'docx', 'docm', 'dotm'],
+	WORD: 	['doc', 'docx', 'docm', 'dotm', 'rtf'],
 	EXCEL: 	['xls', 'xlsx', 'xlsm'],
 	MAIL: 	['eml', 'msg'],
 	PDF: 	['pdf'],

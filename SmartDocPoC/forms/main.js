@@ -170,6 +170,10 @@ function createIndex() {
  */
 function updateDoc() {
 
+	
+	// Return known file extensions
+	var accepted = scopes.file.returnAcceptedFiles();	
+	
 	var params = {
 		defaultLogin: 'myLogin',
 		defaultPassword: 'myPassword',
