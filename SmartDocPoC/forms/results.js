@@ -1,4 +1,16 @@
 /**
+ * @private
+ * @typedef {{errormessage: String, summary: String, extension: String, creator: String, originalname: String, totalprocesstime: String, filesize: String, newname: String, title: String, newpath: String, url: String, content: String, contenttype: String, path: String, lastmodified: String, producer: String, id: String, errorcode: String}}
+ * @SuppressWarnings(unused)
+ * @properties={typeid:35,uuid:"52BA7887-E33C-4CD3-B9AE-EEE7659CD192",variableType:-4}
+ */
+var submitResult;
+
+
+
+
+
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"003C0D01-A944-4D3C-A7FC-CAE4A583E501"}
@@ -13,7 +25,7 @@ var feedback = '';
 var total = 0;
 
 /**
- * @params {SubmitResult} result
+ * @params {plugins.SmartDoc.SubmitResult}
  * 
  * @properties={typeid:24,uuid:"8BAD11A4-664B-419E-9810-FC5F064CB2CC"}
  * @AllowToRunInFind
@@ -26,34 +38,43 @@ function processCallback(result) {
 	// is it a new record or an existing record?
 	var count = 0;
 	if (foundset.find()) {
-		id = resultID;
+		real_id = resultID;
 		count = foundset.search();
 	}
 	if (count == 0) {
 		// not found, we create it:
 		foundset.newRecord(1,true);
+		var record = foundset.getRecord(foundset.newRecord())
+		
 	} else {
 		// found, we select it:
-		foundset.setSelectedIndex(1);
+		record = foundset.getRecord(1)
 	}
 	
-	// get all the values returned:
-	/**@type {Array<String>}*/
-	var keys = result.getKeys();
-	for (var i = 0; i < keys.length; i++) {
-		if (keys[i] != "summary" && keys[i] != "content") {
-			application.output(keys[i] + ": "+result.getValue(keys[i]));
-		}
-		// iterate to feed the record (all keys have one corresponding field in the database):
-		foundset.setDataProviderValue(keys[i],result.getValue(keys[i]));
-	}
+	record.author = result.getValue("author")
+	record.charset = result.getValue("charset")
+	record.contenttype = result.getValue("contenttype")
+	record.creator = result.getValue("creator")
+	record.errorcode = result.getValue("errorcode")
+	record.errormessage = result.getValue("errormessage")
+	record.extension = result.getValue("extension")
+	record.filesize = result.getValue("filesize")
+	record.keywords = result.getValue("keywords")
+	record.lastmodified = result.getValue("lastmodified")
+	record.newname = result.getValue("newname")
+	record.newpath = result.getValue("newpath")
+	record.originalname = result.getValue("originalname")
+	record.path = result.getValue("path")
+	record.producer = result.getValue("producer")
+	record.subject = result.getValue("subject")
+	record.title = result.getValue("title")
+	record.url = result.getValue("url")
+	record.real_id = result.getValue("id")
 	
 	// we also add the error code and message into the database to keep track of errors (if any):
 	foundset.errorcode = result.getErrorCode();
 	foundset.errormessage = result.getErrorMessage();
-	keys.sort();
-	foundset.fields = keys.join('\n');
-	databaseManager.saveData(foundset.getSelectedRecord());
+	databaseManager.saveData(record);
 	
 	// the totalprocesstime property simply measures the time it took for the whole process (it is never null):
 	var time = result.getValue("totalprocesstime");

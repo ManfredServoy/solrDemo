@@ -168,13 +168,14 @@ function search() {
 	returned = res.response.docs.length;
 	// we iterate on the docs Array:
 	for (var i in res.response.docs) {
-		result += '<table>';
+//		result += '<table>';
 		var doc = res.response.docs[i];
-
-		// this little trick is to make sure the id is the first one to appear
-		// (the properties are not guaranteed to be in a consistent order):
-		result += '<tr><td>id</td><td>' + doc.id + '</td></tr>';
 		docIDs.push(doc.id)
+
+//		// this little trick is to make sure the id is the first one to appear
+//		// (the properties are not guaranteed to be in a consistent order):
+		result += '<tr><td>id</td><td>' + doc.id + '</td></tr>';
+
 		// we iterate on the properties of the document result:
 		for (var d in doc) {
 			if (d != "id") {
@@ -183,30 +184,28 @@ function search() {
 		}
 		result += '</table><hr>';
 	}
-//	if (hilite == 1) {
-//		// in that case we will have a property 'highlighting' in our result Object
-//		setSnippets(res.highlighting)
-//		hiliteResult = '<html><head><style type="text/css">em { font-weight: bold; font-style: plain; color: #FF3333; }</style></head><body>';
-//
-//		// we iterate on that highlighting property which contains one property key (the id) for each document
-//		// the value of that property will be an object with one property for each of the hiliteFields properties
-//		
-//		var higlighting = JSON.parse(JSON.stringify(res.highlighting)) 
-//		
-//		for (var id in higlighting) {
-//			hiliteResult += '<table><tr><td colspan="2">' + id + '</td></tr>';
-//			var obj = higlighting[id];
-//			if (obj) {
-//				for (var field in obj) {
-//					hiliteResult += '<tr><td>' + field + '</td><td>' + obj[field][0] + '</td></tr>';
-//				}
-//			}
-//			hiliteResult += '</table><hr>';
-//		}
-//		hiliteResult += "</body></html>";
-//	}
+	if (hilite == 1) {
+		setSnippets(res.highlighting)
+		hiliteResult = '<html><head><style type="text/css">em { font-weight: bold; font-style: plain; color: #FF3333; }</style></head><body>';
 
-	application.output('returning '  + docIDs)
+		// we iterate on that highlighting property which contains one property key (the id) for each document
+		// the value of that property will be an object with one property for each of the hiliteFields properties
+		
+		var higlighting = JSON.parse(JSON.stringify(res.highlighting)) 
+		
+		for (var id in higlighting) {
+			hiliteResult += '<table><tr><td colspan="2">' + id + '</td></tr>';
+			var obj = higlighting[id];
+			if (obj) {
+				for (var field in obj) {
+					hiliteResult += '<tr><td>' + field + '</td><td>' + obj[field][0] + '</td></tr>';
+				}
+			}
+			hiliteResult += '</table><hr>';
+		}
+		hiliteResult += "</body></html>";
+	}
+
 	return docIDs
 }
 
@@ -216,32 +215,17 @@ function search() {
  * @properties={typeid:24,uuid:"67F0EBF6-0E60-4E9F-8E30-EAC4F98AEB75"}
  */
 function setSnippets(snippets) {
-	snippets = JSON.parse(JSON.stringify(snippets)) //should not be necessary 
-
 	var hfs = datasources.mem.highlights.getFoundSet()
 	hfs.loadAllRecords()
 	hfs.deleteAllRecords()
-	
 	for (var key in snippets) {
-		var summary = ""
 		if (!snippets.hasOwnProperty(key)) continue;
 		var summaryObj = snippets[key]['summary']
-		try{ //should not be necessary 
-			
-			var jstring = JSON.stringify(summaryObj) //should not be necessary 
-			var sum = JSON.parse(jstring) //should not be necessary 
-			summary = sum[0] 
-		    }
-		    catch(errror){
-		       application.output("Not a JSON response")
-		    }
-		
-		if (summary) {
+		if (summaryObj) {
 			var snippet = hfs.getRecord(hfs.newRecord())
-			snippet.id = parseInt(key)
-			snippet.snippet =  summary
+			snippet.real_id = key
+			snippet.snippet =  summaryObj[0]
 		}
 	}
-	
 	databaseManager.saveData(hfs)
 }

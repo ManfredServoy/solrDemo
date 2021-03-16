@@ -122,6 +122,13 @@ name:"producer"
 },
 {
 allowNull:true,
+creationOrderIndex:21,
+dataType:12,
+length:50,
+name:"real_id"
+},
+{
+allowNull:true,
 creationOrderIndex:18,
 dataType:12,
 length:255,

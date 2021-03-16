@@ -157,7 +157,7 @@ function createIndex(pathToBeIndexed) {
 					// that's a new one, let's create a record to hold the result:
 					var fileRecord = foundset.getRecord(foundset.newRecord())
 					databaseManager.saveData(fileRecord);
-					params.documents.push({ id: fileRecord.id, file: upload, newName: upload });
+					params.documents.push({ id: fileRecord.real_id, file: upload, newName: upload });
 					_bSubmitted = true;
 				}
 			}
@@ -174,16 +174,18 @@ function createIndex(pathToBeIndexed) {
 
 }
 
-/**
- * @properties={typeid:24,uuid:"4C405951-9D86-4984-BD30-75235F097B78"}
- */
-function updateDoc() {
 
 	
 	// Return known file extensions
-	var accepted = scopes.file.returnAcceptedFiles();	
+	/**
+ * @properties={typeid:35,uuid:"CA2AF01C-3971-489F-8C36-A6DFA4D64D5F",variableType:-4}
+ */
+var accepted = scopes.file.returnAcceptedFiles();	
 	
-	var params = {
+	/**
+ * @properties={typeid:35,uuid:"50048AEC-C4F8-4C82-A65F-8A76315CB84C",variableType:-4}
+ */
+var params = {
 		defaultLogin: 'myLogin',
 		defaultPassword: 'myPassword',
 		// the callback method that will save the results in the database
@@ -204,12 +206,6 @@ function updateDoc() {
 		documents: []
 	}
 
-	params.documents.push({ id: "11594", file: "G://Dossiers/2021/2021014001/test.doc", newName: "G://Dossiers/2021/2021014001/test.doc" });
-
-	plugins.SmartDoc.submit(params);
-
-}
-
 /**
  * @properties={typeid:24,uuid:"49AF4173-BCA5-4E8D-B55B-9A99C05D5CC3"}
  * @return {String}
@@ -226,17 +222,7 @@ function getSubPath() {
 	return '/';
 }
 
-/**
- * @param {JSUpload} upload
- *
- * @properties={typeid:24,uuid:"1E58E111-EDCE-4BE5-BB05-628506C4F784"}
- */
-function onFileUploaded(upload) {
-	application.output('onfileuploaded')
-	var location = plugins.file.getDefaultUploadLocation()
-	var bool = upload.write(location + "/" + upload.getName())
-	application.output(bool)
-}
+
 
 /**
  * @param {JSEvent} event
@@ -280,7 +266,7 @@ function onActionFind() {
 		query = "summary:java\ncontent:*" + queryString + "*";
 		var results = search()
 		var qb = datasources.db.smart_doc.results.createSelect();
-		qb.where.add(qb.columns.id.isin(results))
+		qb.where.add(qb.columns.real_id.isin(results))
 		foundset.loadRecords(qb)
 	} else {
 		if(foundset.find()){
@@ -344,7 +330,7 @@ function download(file) {
 
 }
 
-
+//////•••••••••••••••••••••FOLDER WATCHER•••••••••••••••••••///////////////////////////////
 
 
 
@@ -382,10 +368,9 @@ function startWatcher(){
  */
 function testWatcherCallback(file, event, count) {
    application.output(event + ' (' + count + '): ' + file.getAbsolutePath());
-   application.output('•••••' + event + '•••••')
    if (file.isFile() && event == "ENTRY_CREATE"){
-	   forms.main.createIndex(file.getAbsolutePath())
-	   application.output("New file!")
+	   createIndex(file.getAbsolutePath())
+	   //application.output("New file!")
    }
    
 }

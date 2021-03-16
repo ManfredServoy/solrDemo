@@ -89,7 +89,7 @@ onActionMethodID:"CFDABA69-9722-4644-99BB-CA51395A087E",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"140,20",
-text:"Index some more...",
+text:"Simple Search",
 typeid:7,
 uuid:"46769055-5A20-4E72-AC23-F5B9290E8FE7"
 },

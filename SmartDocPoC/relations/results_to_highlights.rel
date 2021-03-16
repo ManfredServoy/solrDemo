@@ -1,7 +1,7 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"mem:highlights",
 items:[
-{foreignColumnName:"id",primaryDataProviderID:"id",typeid:23,uuid:"F48A950F-3FA6-40FB-9322-44A628ABC415"}
+{foreignColumnName:"real_id",primaryDataProviderID:"real_id",typeid:23,uuid:"F48A950F-3FA6-40FB-9322-44A628ABC415"}
 ],
 joinType:1,
 name:"results_to_highlights",
