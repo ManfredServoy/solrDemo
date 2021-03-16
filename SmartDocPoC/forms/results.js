@@ -7,6 +7,12 @@
 var submitResult;
 
 
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"44D7AF0C-6C2C-4FFA-8C16-5B7406C89D93",variableType:4}
+ */
+var left = 0
 
 
 
@@ -33,7 +39,7 @@ var total = 0;
 function processCallback(result) {
 	var resultID = result.getValue("id");
 	// show which one is in process:
-	application.output("Processing " + result.getValue("originalname"));
+	
 		
 	// is it a new record or an existing record?
 	
@@ -94,6 +100,10 @@ function processCallback(result) {
 	var solrfolder = plugins.SmartDoc.serverFolder
 	var filepath = foundset.getSelectedRecord().newname
 	plugins.file.deleteFile(solrfolder + "/" + filepath)
+	
+	left = left - 1 
+	
+	application.output("Processed " + result.getValue("originalname") + ", " + left + " to go");
 	
 }
 

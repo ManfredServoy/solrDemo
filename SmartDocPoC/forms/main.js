@@ -135,7 +135,7 @@ function createIndex(pathToBeIndexed) {
 					params.documents.push({ id: fileRecord.real_id, file: upload, newName: upload });
 					_bSubmitted = true;
 				}
-			}
+			} 
 		}
 	}
 
@@ -145,6 +145,7 @@ function createIndex(pathToBeIndexed) {
 		forms.results.feedback = 'Finished!'
 	}
 	// Submit document(s) to the indexing process, contained in JS Object with the parameters:
+	forms.results.left = params.documents.length
 	plugins.SmartDoc.submit(params);
 
 }
@@ -238,7 +239,7 @@ function onActionCreateIndex(event) {
  */
 function onActionFind() {
 	if (queryString.length > 0) {
-		query = "summary:java\ncontent:*" + queryString + "*";
+		query = "summary:*" + queryString + "*\ncontent:*" + queryString + "*";
 		var results = search()
 		var qb = datasources.db.smart_doc.results.createSelect();
 		qb.where.add(qb.columns.real_id.isin(results))
