@@ -48,35 +48,10 @@ var subPath = "";
 function createIndex(pathToBeIndexed) {
 	
 	application.output("Starting to index " + pathToBeIndexed)
-
-	// Return known file extensions
-	var accepted = scopes.file.returnAcceptedFiles();
-
 	foundset.loadAllRecords()
 	// reset feedback window previous results:
 	forms.results.feedback = '';
 
-	// construct our parameter object:
-	var params = {
-		defaultLogin: 'myLogin',
-		defaultPassword: 'myPassword',
-		// the callback method that will save the results in the database
-		callback: forms.results.processCallback,
-		// the accepted extensions (if not provided, everything goes!)
-		accepted: accepted,
-		// if true, will trim all double spacing/CR/LF/Tabs (can be overriden at the document level):
-		trimUnwantedSpaces: true,
-		// a rule or an array of rules to be used globally,
-		// each one being an object with a Regexp pattern (java style)
-		// and a replacement string
-		// applied in sequence in the order provided
-		// (rules can also be added at the document level):
-		replaceRules: { pattern: "^\\d+ *|\\n\\d+ *", replacement: "" },
-		// set the newPath to be used (can be overridden per document):
-		newPath: getSubPath(),
-		// creates a blank array (to be filled by later loops:
-		documents: []
-	}
 
 	// get a foundset from the 'urls' table:
 	//	var db = databaseManager.getDataSourceServerName(controller.getDataSource());
@@ -192,7 +167,7 @@ var params = {
 		callback: forms.results.processCallback,
 		// the accepted extensions (if not provided, everything goes!)
 		accepted: accepted,
-		// if true, will trim all double spacing/CR/LF/Tabs (can be overriden at the document level):
+		// if true, will trim all double spacing/CR/LF/Tabs (can be overridden at the document level):
 		trimUnwantedSpaces: true,
 		// a rule or an array of rules to be used globally,
 		// each one being an object with a Regexp pattern (java style)
@@ -268,14 +243,7 @@ function onActionFind() {
 		var qb = datasources.db.smart_doc.results.createSelect();
 		qb.where.add(qb.columns.real_id.isin(results))
 		foundset.loadRecords(qb)
-	} else {
-		if(foundset.find()){
-			foundset.author = "manfred" //yes, I want to live forever
-			foundset.search()
-			
-		}
-		
-	}
+	} 
 }
 
 /**

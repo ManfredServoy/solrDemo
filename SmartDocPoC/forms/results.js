@@ -80,7 +80,7 @@ function processCallback(result) {
 	var time = result.getValue("totalprocesstime");
 	total += time;
 	// update the feedback field:
-	if (result.getErrorCode() != SubmitResult.ERROR_NONE) {
+	if (result.getErrorCode() != result.ERROR_NONE) {
 		feedback += resultID + ": Exception: " + result.getErrorMessage() + "\n";
 	} else {
 		feedback += resultID + ": Done in "+time+"ms!\n";

@@ -149,11 +149,14 @@ function search() {
 		includeScore: (includeScore == 1),
 		hiliteFields: hiliteFields,
 		hiliteFragSize: hiliteFragSize,
+		hiliteSimplePre: '<h7 class="highlight">',
+		hiliteSimplePost: '</h7>',
 		sortBy: sortBy
 	};
 
 	//application.output(params)
 	// launch
+	
 	var res = plugins.SmartDoc.query(params);
 	if (res == null) {
 		// maybe the Solr server is unreachable?
