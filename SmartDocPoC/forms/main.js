@@ -87,6 +87,11 @@ function onActionFind() {
 		var qb = datasources.db.smart_doc.results.createSelect();
 		qb.where.add(qb.columns.real_id.isin(results))
 		foundset.loadRecords(qb)
+	} else {
+		var snippets = datasources.mem.highlights.getFoundSet()
+		snippets.loadAllRecords()
+		snippets.deleteAllRecords()
+		foundset.loadAllRecords()
 	}
 }
 
@@ -127,10 +132,30 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"B5C4F0A2-236B-4020-9F14-BF8CAB44FC2B"}
  */
 function onCellClick(foundsetindex, columnindex, record, event, columnid) {
-	if (columnindex == 3) {
+	var maxColumns = elements[event.getElementName()].columns.length
+	if (columnindex == maxColumns -1) {
 		download(record)
 	}
 }
+
+/**
+ * @param oldValue
+ * @param newValue
+ * @param {JSEvent} event
+ *
+ * @return {boolean}
+ *
+ * @properties={typeid:24,uuid:"7F966D4E-E97E-45A8-910F-566DF5F8AA0B"}
+ */
+function onDataChangeSwitch(oldValue, newValue, event) {
+	if (newValue == 1) {
+		startWatcher()
+	} else {
+		stopWatcher()
+	}
+	return false;
+}
+
 
 /**
  * TODO generated, please specify type and doc for the params
@@ -145,7 +170,7 @@ function download(file) {
 
 }
 
-//////•••••••••••••••••••••FOLDER WATCHER•••••••••••••••••••///////////////////////////////
+//////•••••••••••••••••••••FOLDER WATCHER••••NEEDS TO MOVE TO SCOPE•••••••••••••••///////////////////////////////
 
 /**
  * @type {scopes.watcher.FolderWatcher}
@@ -196,20 +221,3 @@ function handleWatcherCallback(filePath, eventType) {
 	}
 }
 
-/**
- * @param oldValue
- * @param newValue
- * @param {JSEvent} event
- *
- * @return {boolean}
- *
- * @properties={typeid:24,uuid:"7F966D4E-E97E-45A8-910F-566DF5F8AA0B"}
- */
-function onDataChangeSwitch(oldValue, newValue, event) {
-	if (newValue == 1) {
-		startWatcher()
-	} else {
-		stopWatcher()
-	}
-	return false;
-}

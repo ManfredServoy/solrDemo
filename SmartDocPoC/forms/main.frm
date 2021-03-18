@@ -137,9 +137,12 @@ svyUUID:"051ECEBA-6E63-4C29-A7B0-0C4F218BC1C3",
 width:80
 },
 {
-dataprovider:"indexed",
-format:"E",
-svyUUID:"69253DC3-E205-4624-ACBE-9A10518F33C4"
+dataprovider:"nullstring",
+format:"d/MM/yyyy",
+styleClassDataprovider:"indexStatus",
+svyUUID:"69253DC3-E205-4624-ACBE-9A10518F33C4",
+tooltip:"errormessage",
+width:10
 },
 {
 dataprovider:"results_to_highlights.snippet",

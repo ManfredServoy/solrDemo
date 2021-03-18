@@ -151,6 +151,7 @@ function search() {
 		hiliteFragSize: hiliteFragSize,
 		hiliteSimplePre: '<h7 class="highlight">',
 		hiliteSimplePost: '</h7>',
+		hiliteMaxAnalyzedChars: 10000000,
 		sortBy: sortBy
 	};
 

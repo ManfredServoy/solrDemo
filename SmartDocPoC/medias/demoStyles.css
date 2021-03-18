@@ -338,3 +338,11 @@ portal
 	color: red;
 	font-weight:bolder;
 }
+
+.error{
+	color: red;
+}
+
+.ok{
+	color: green;
+}

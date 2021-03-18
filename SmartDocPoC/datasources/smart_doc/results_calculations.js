@@ -1,5 +1,17 @@
-
-
+/**
+ * @properties={type:12,typeid:36,uuid:"74D430F2-9453-4FFA-8821-97793CD12B1D"}
+ */
+function indexStatus()
+{
+	if (errormessage){
+		return "fa fa-exclamation-triangle error "
+	}
+	if (indexed){
+		return "fa fa-check-circle ok"
+	}
+	
+	return ''
+}
 
 /**
  * @properties={type:12,typeid:36,uuid:"F03A7F0D-09D9-41A8-8554-FF40CA365BEB"}
@@ -26,6 +38,10 @@ function fileIcon() {
 
 	case "XLS" || "XLSX" || "XLSM":
 		return "fa fa-file-excel-o icon"
+		break;
+
+	case "JPG" || "JPEG" || "PNG" || "PSD" || "TIF":
+		return "fa fa-file-image-o icon"
 		break;
 
 	default:

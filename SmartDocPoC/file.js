@@ -141,7 +141,7 @@ var params = {
 	defaultLogin: 'myLogin',
 	defaultPassword: 'myPassword',
 	// the callback method that will save the results in the database
-	callback: forms.results.processCallback,
+	callback: scopes.solrHandler.processCallback,
 	// the accepted extensions (if not provided, everything goes!)
 	accepted: accepted,
 	// if true, will trim all double spacing/CR/LF/Tabs (can be overridden at the document level):
@@ -313,6 +313,7 @@ function newFile(file) {
 	record.hash = plugins.FileWatcher.getMD5Checksum(file)
 	record.parentfolder = parent(file.getAbsolutePath())
 	record.filename = file.getName()
+	record.extension = file.getName().split('.').pop()
 	databaseManager.saveData(record)
 	//delete index
 	plugins.SmartDoc.remove(record.real_id)
