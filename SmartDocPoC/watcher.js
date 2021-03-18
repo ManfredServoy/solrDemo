@@ -22,7 +22,7 @@ function FolderWatcher(fileOrFilePath, callback, recursive) {
    try {
        var watchService = java.nio.file.FileSystems.getDefault().newWatchService();
    } catch (e) {
-	   application.output('Error acquiring a WatchService');
+       application.output('Error acquiring a WatchService');
    }
    
    /**
@@ -31,6 +31,8 @@ function FolderWatcher(fileOrFilePath, callback, recursive) {
    var watchKeys = new java.util.HashMap();
    
    var fileToWatch = getPathFromArgs(fileOrFilePath);
+   
+   var methodToCall = scopes.svySystem.convertServoyMethodToQualifiedName(forms.main.handleWatcherCallback);
    
    /**
     * @param {String|plugins.file.JSFile} fileArgs
@@ -75,6 +77,15 @@ function FolderWatcher(fileOrFilePath, callback, recursive) {
        }
    }
    
+   function executeCallback(file, eventType, count) {
+       var callbackRunnable = new java.lang.Runnable({
+           run: function() {
+               scopes.svySystem.callMethod(methodToCall, [file, eventType, count]);
+           }
+       })
+       Packages.com.servoy.j2db.J2DBGlobals.getServiceProvider().invokeLater(callbackRunnable);
+   }
+   
    var r = new java.lang.Runnable({
        run: function() {
            try {
@@ -84,7 +95,7 @@ function FolderWatcher(fileOrFilePath, callback, recursive) {
                    /** @type {Array<java.nio.file.WatchEvent>} */
                    var watchEvents = queuedKey.pollEvents().toArray();
                    for (var i = 0; i < watchEvents.length; i++) {
-                	   application.output('FolderWatcherEvent: ' + watchEvents[i].kind() + ' : ' + watchEvents[i].context());
+                       application.output('FolderWatcherEvent: ' + watchEvents[i].kind() + ' : ' + watchEvents[i].context());
                        
                        /** @type {java.nio.file.Path} */
                        var parentPath = watchKeys.get(queuedKey);
@@ -97,10 +108,10 @@ function FolderWatcher(fileOrFilePath, callback, recursive) {
                            registerDir(fullCurrPath);
                        }
                        
-                       callback.call(null, plugins.file.convertToJSFile(fullCurrPath), watchEvents[i].kind(), watchEvents[i].count());
+                       executeCallback(plugins.file.convertToJSFile(fullCurrPath), watchEvents[i].kind(), watchEvents[i].count())
                    }
                    if (!queuedKey.reset()) {
-                	   application.output('Removing watch key');
+                       application.output('Removing watch key');
                        watchKeys.remove(queuedKey);
                    }
                    if (watchKeys.isEmpty()) {
@@ -109,7 +120,9 @@ function FolderWatcher(fileOrFilePath, callback, recursive) {
                    }
                }
            } catch (e) {
-        	   application.output('FolderWatcher stopped ' + e);
+        	   application.output('FolderWatcher stopped');
+        	   application.output(e);
+        	   application.output(e.stack);
            }
        }
    }); 
@@ -123,7 +136,7 @@ function FolderWatcher(fileOrFilePath, callback, recursive) {
            Packages.com.servoy.j2db.J2DBGlobals.getServiceProvider().getScheduledExecutor().execute(r);
            return true;
        } catch (e) {
-           application.output(e);
+    	   application.output(e);
        }
        return false;
    }

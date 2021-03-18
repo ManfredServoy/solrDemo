@@ -31,57 +31,14 @@ var feedback = '';
 var total = 0;
 
 /**
- * @params {plugins.SmartDoc.SubmitResult}
+ * @param {plugins.SmartDoc.SubmitResult} result
  * 
  * @properties={typeid:24,uuid:"8BAD11A4-664B-419E-9810-FC5F064CB2CC"}
  * @AllowToRunInFind
  */
 function processCallback(result) {
 	var resultID = result.getValue("id");
-	// show which one is in process:
-	
-		
-	// is it a new record or an existing record?
-	
-	var qry = datasources.db.smart_doc.results.createSelect()
-	qry.where.add(qry.columns.real_id.eq(resultID))
-	foundset.loadRecords(qry)
-	
-	if (foundset.getSize() == 0) {
-		// not found, we create it:
-		foundset.newRecord(1,true);
-		var record = foundset.getRecord(foundset.newRecord())
-		
-	} else {
-		// found, we select it:
-		record = foundset.getRecord(1)
-	}
-	
-	record.author = result.getValue("author")
-	record.charset = result.getValue("charset")
-	record.contenttype = result.getValue("contenttype")
-	record.creator = result.getValue("creator")
-	record.errorcode = result.getValue("errorcode")
-	record.errormessage = result.getValue("errormessage")
-	record.extension = result.getValue("extension")
-	record.filesize = result.getValue("filesize")
-	record.keywords = result.getValue("keywords")
-	record.lastmodified = result.getValue("lastmodified")
-	record.newname = result.getValue("newname")
-	record.newpath = result.getValue("newpath")
-	record.originalname = result.getValue("originalname")
-	record.path = result.getValue("path")
-	record.producer = result.getValue("producer")
-	record.subject = result.getValue("subject")
-	record.title = result.getValue("title")
-	record.url = result.getValue("url")
-	record.real_id = result.getValue("id")
-	
-	// we also add the error code and message into the database to keep track of errors (if any):
-	foundset.errorcode = result.getErrorCode();
-	foundset.errormessage = result.getErrorMessage();
-	databaseManager.saveData(record);
-	
+	updateRecord(result)
 	// the totalprocesstime property simply measures the time it took for the whole process (it is never null):
 	var time = result.getValue("totalprocesstime");
 	total += time;
@@ -98,14 +55,73 @@ function processCallback(result) {
 	}
 	
 	var solrfolder = plugins.SmartDoc.serverFolder
-	var filepath = foundset.getSelectedRecord().newname
+	var filepath = result.getValue("newname")
 	plugins.file.deleteFile(solrfolder + "/" + filepath)
-	
-	left = left - 1 
-	
-	application.output("Processed " + result.getValue("originalname") + ", " + left + " to go");
-	
 }
+
+
+/**
+ * @param {plugins.SmartDoc.SubmitResult} solrResult
+ * @return {JSRecord}
+ * @properties={typeid:24,uuid:"B7A2A072-1F7E-42B8-8BBE-E07E0E6634E6"}
+ */
+function updateRecord(solrResult){
+	var resultID = solrResult.getValue("id");
+	// show which one is in process:
+	// is it a new record or an existing record?
+	var fs = datasources.db.smart_doc.results.getFoundSet()
+	fs.loadAllRecords()
+	var qry = fs.getQuery()
+	qry.where.add(qry.columns.real_id.eq(resultID))
+	fs.loadRecords(qry)
+	
+	if (fs.getSize() == 0) {
+		// not found, we create it:
+		fs.newRecord(1,true);
+		var record = fs.getRecord(fs.newRecord())
+		
+	} else {
+		// found, we select it:
+		record = fs.getRecord(1)
+	}
+	
+	
+	//database columns to be reviewed
+	
+	record.author = solrResult.getValue("author")
+	record.charset = solrResult.getValue("charset")
+	record.contenttype = solrResult.getValue("contenttype")
+	record.creator = solrResult.getValue("creator")
+	record.errorcode = solrResult.getValue("errorcode")
+	record.errormessage = solrResult.getValue("errormessage")
+	record.extension = solrResult.getValue("extension")
+	record.filesize = solrResult.getValue("filesize")
+	record.parentfolder = scopes.file.parent(path)
+	
+	record.keywords = solrResult.getValue("keywords")
+	record.lastmodified = solrResult.getValue("lastmodified")
+	record.newname = solrResult.getValue("newname")
+	record.newpath = solrResult.getValue("newpath")
+	record.originalname = solrResult.getValue("originalname")
+	record.filename = record.originalname
+	record.path = solrResult.getValue("path")
+	record.producer = solrResult.getValue("producer")
+	record.subject = solrResult.getValue("subject")
+	record.title = solrResult.getValue("title")
+	record.url = solrResult.getValue("url")
+	record.real_id = solrResult.getValue("id")
+	record.indexed = new Date()
+	
+	// we also add the error code and message into the database to keep track of errors (if any):
+	record.errorcode = solrResult.getErrorCode();
+	record.errormessage = solrResult.getErrorMessage();
+	
+	application.output("Processed " + record.filename);
+	databaseManager.saveData(record);
+	return record
+}
+
+
 
 /**
  * Perform the element default action.
