@@ -14,3 +14,4 @@ function onActionStopProcess(event) {
 	plugins.SmartDoc.stopProcess();
 	application.closeForm();
 }
+	

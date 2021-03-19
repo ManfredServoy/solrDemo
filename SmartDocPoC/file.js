@@ -10,22 +10,40 @@ var _oKnownFiles = {
 	TEXT: ['txt']
 };
 
+
 /**
- * @param {String} pathToBeIndexed
- *
- * @properties={typeid:24,uuid:"F771559B-2C93-4281-9FBA-131886866DF0"}
- * @AllowToRunInFind
+ * @properties={typeid:35,uuid:"4CA2DB6F-E218-4323-B156-B59C0F259424",variableType:-4}
  */
-function createIndex(pathToBeIndexed) {
-	var file = plugins.file.convertToJSFile(pathToBeIndexed)
+var fs = datasources.db.smart_doc.results.getFoundSet()
+
+
+/**
+ * @param {String} fromPath
+ * @param {Boolean} [allNew]
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"B0CEAE62-519D-403E-A1A3-5F79D4D85AC3"}
+ */
+function addFiles(fromPath, allNew) {
+	var file = plugins.file.convertToJSFile(fromPath)
 	if (file.isDirectory()) {
-		var files = scopes.file.getContent(pathToBeIndexed)
+		var files = scopes.file.getContent(fromPath)
 	} else {
 		files = [file]
 	}
 
 	for (var f = 0; f < files.length; f++) {
+		
+		
 		file = files[f]
+		
+		if (allNew){ //initial index
+			scopes.file.newFile(file)
+			continue
+		}
+		
+		//FileWatcher;
+		
 		var knownPath = pathExists(file)
 		var duplicateFiles = getMatchingHashes(file)
 		var hasDuplicates = !!duplicateFiles.getMaxRowIndex()
@@ -49,12 +67,28 @@ function createIndex(pathToBeIndexed) {
 			//ignore: nothing changed
 
 		}
+		
 	}
-	
+	databaseManager.saveData(fs)
+	sendToSolr()
+}
+
+
+/**
+ * @properties={typeid:24,uuid:"83BFAF4A-E4BF-4093-B315-58B8CA1ED47E"}
+ */
+function sendToSolr(){
+	fs.loadAllRecords()
+	for (var i = 1; i <= fs.getSize(); i++) {
+		var record = fs.getRecord(i);
+		var file = plugins.file.convertToJSFile(record.path)
+		params.documents.push({ id: record.real_id, file: file, newName: file.getName() });
+	}
 	params.documents = params.documents.filter(onlyUnique);
-	
 	plugins.SmartDoc.submit(params)
 }
+
+
 
 
 /**
@@ -64,7 +98,6 @@ function createIndex(pathToBeIndexed) {
  * @properties={typeid:24,uuid:"74AB518C-EEEF-4AD9-8B40-D650F5282DDB"}
  */
 function pathExists(file){
-	var fs = datasources.db.smart_doc.results.getFoundSet()
 	var q = fs.getQuery()
 	q.where.add(q.columns.path.eq(file.getAbsolutePath()))
 	var maxReturnedRows = 1;
@@ -80,16 +113,15 @@ function pathExists(file){
  */
 function getMatchingHashes(file){
 	var fileHash = plugins.FileWatcher.getMD5Checksum(file)
-	var fs = datasources.db.smart_doc.results.getFoundSet()
-	var qu = fs.getQuery()
-	qu.where.add(qu.columns.hash.eq(fileHash))
-	qu.result.add(qu.columns.path)
-	qu.result.add(qu.columns.hash)
-	qu.result.add(qu.columns.parentfolder)
-	qu.result.add(qu.columns.filename)
-	qu.result.add(qu.columns.real_id)
+	var q = fs.getQuery()
+	q.where.add(q.columns.hash.eq(fileHash))
+	q.result.add(q.columns.path)
+	q.result.add(q.columns.hash)
+	q.result.add(q.columns.parentfolder)
+	q.result.add(q.columns.filename)
+	q.result.add(q.columns.real_id)
 
-	return databaseManager.getDataSetByQuery(qu, true, 1000);
+	return databaseManager.getDataSetByQuery(q, true, 1000);
 }
 
 /**
@@ -181,7 +213,6 @@ function returnAcceptedFiles() {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @return {Array<plugins.file.JSFile>}
  * @param {String} _sIndexPath
  * @properties={typeid:24,uuid:"7C67FC03-061A-49FA-AE43-98524A2BE928"}
@@ -237,6 +268,24 @@ function getFileIcon(_sExtension) {
 
 }
 
+
+
+/**
+ * @param {plugins.file.JSFile} file
+ *
+ * @properties={typeid:24,uuid:"6C56C349-E4A6-4BA8-8AF2-FC8923B45E9D"}
+ */
+function newFile(file) {
+	var record = fs.getRecord(fs.newRecord())
+	record.path = file.getAbsolutePath()
+	record.hash = plugins.FileWatcher.getMD5Checksum(file)
+	record.parentfolder = parent(file.getAbsolutePath())
+	record.filename = file.getName()
+	record.extension = file.getName().split('.').pop()
+	//delete index
+	plugins.SmartDoc.remove(record.real_id)
+}
+
 /**
  * @param fileid
  * @param {plugins.file.JSFile} file
@@ -244,23 +293,17 @@ function getFileIcon(_sExtension) {
  * @properties={typeid:24,uuid:"1700A4C9-49F2-43C9-8968-AEB5CDADCE50"}
  */
 function updateFileById(fileid, file) {
-	var fs = datasources.db.smart_doc.results.getFoundSet()
-	fs.loadAllRecords()
 	//update file path in existing record;
-	var pathq = fs.getQuery()
-	pathq.where.add(pathq.columns.real_id.eq(fileid))
-	fs.loadRecords(pathq)
+	var q = fs.getQuery()
+	q.where.add(q.columns.real_id.eq(fileid))
+	fs.loadRecords(q)
 	var record = fs.getRecord(1)
 	record.path = file.getAbsolutePath()
 	record.parentfolder = parent(file.getAbsolutePath())
 	record.filename = file.getName()
-	databaseManager.saveData(record)
 
 	//delete index
 	plugins.SmartDoc.remove(record.real_id)
-	//re-index
-	params.documents.push({ id: record.real_id, file: file, newName: file.getName() });
-
 }
 
 /**
@@ -269,24 +312,21 @@ function updateFileById(fileid, file) {
  * @properties={typeid:24,uuid:"BD59E0BB-C639-4EA5-9BCC-EE6A94C342BB"}
  */
 function updateFile(file) {
-	var fs = datasources.db.smart_doc.results.getFoundSet()
-	fs.loadAllRecords()
-	//update file path in existing record;
-	var pathq = fs.getQuery()
-	pathq.where.add(pathq.columns.path.eq(file.getAbsolutePath()))
-	fs.loadRecords(pathq)
+	var q = fs.getQuery()
+	q.where.add(q.columns.path.eq(file.getAbsolutePath()))
+	fs.loadRecords(q)
 	var record = fs.getRecord(1)
 	record.path = file.getAbsolutePath()
 	record.parentfolder = parent(file.getAbsolutePath())
 	record.filename = file.getName()
-	databaseManager.saveData(record)
 
 	//delete index
 	plugins.SmartDoc.remove(record.real_id)
-	//re-index
-	params.documents.push({ id: record.real_id, file: file, newName: file.getName() });
-
 }
+
+
+
+
 
 /**
  * @param {String} filePath
@@ -300,27 +340,7 @@ function parent(filePath) {
 
 }
 
-/**
- * @param {plugins.file.JSFile} file
- *
- * @properties={typeid:24,uuid:"6C56C349-E4A6-4BA8-8AF2-FC8923B45E9D"}
- */
-function newFile(file) {
-	var fs = datasources.db.smart_doc.results.getFoundSet()
-	//create new record, and index it
-	var record = fs.getRecord(fs.newRecord())
-	record.path = file.getAbsolutePath()
-	record.hash = plugins.FileWatcher.getMD5Checksum(file)
-	record.parentfolder = parent(file.getAbsolutePath())
-	record.filename = file.getName()
-	record.extension = file.getName().split('.').pop()
-	databaseManager.saveData(record)
-	//delete index
-	plugins.SmartDoc.remove(record.real_id)
-	//re-index
-	params.documents.push({ id: record.real_id, file: file, newName: file.getName() });
 
-}
 
 /**
  * @param value

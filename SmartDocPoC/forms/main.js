@@ -72,7 +72,7 @@ function onActionReset(event) {
  * @properties={typeid:24,uuid:"4B37D35E-82D5-4F2C-86AD-D5768C2E7F8D"}
  */
 function onActionCreateIndex(event) {
-	scopes.file.createIndex(indexPath)
+	scopes.file.addFiles(indexPath, true)
 
 }
 
@@ -205,7 +205,7 @@ function handleWatcherCallback(filePath, eventType) {
 	switch (eventType.toString()) {
 	case "ENTRY_CREATE":
 		application.output("Created: " + filePath)
-		scopes.file.createIndex(filePath)
+		scopes.file.addFiles(filePath)
 		break;
 
 	case "ENTRY_MODIFY":

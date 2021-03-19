@@ -7,6 +7,14 @@
 var submitResult;
 
 
+
+/**
+ * @properties={typeid:35,uuid:"47E438BA-F9C1-4FA0-9D58-B69ED514A2E7",variableType:-4}
+ * @type {plugins.SmartDoc.SubmitResult}
+ */
+var previous = null
+
+
 /**
  * @type {Number}
  *
@@ -52,11 +60,16 @@ function processCallback(solrResult) {
  * @properties={typeid:24,uuid:"4C3D0F19-D04C-4412-BD02-E2ED25BEEA9D"}
  */
 function updateRecord(solrResult){
-	var resultID = solrResult.getValue("id")
 	
-	if (solrResult.getValue("originalname") == "jenkinsError.html"){
-		application.output('braak')
+	if (solrResult === previous){
+		application.output("ignoring " + solrResult.getValue("id"))
+		return
 	}
+
+	previous = solrResult
+	
+	
+	var resultID = solrResult.getValue("id")
 	// show which one is in process:
 	// is it a new record or an existing record?
 	var fs = datasources.db.smart_doc.results.getFoundSet()
@@ -102,9 +115,9 @@ function updateRecord(solrResult){
 	record.indexed = new Date()
 	
 	// we also add the error code and message into the database to keep track of errors (if any):
-	//record.errorcode = solrResult.getErrorCode();
-	//record.errormessage = solrResult.getErrorMessage();
-	
+//	fs.errorcode = solrResult.getErrorCode();
+//	fs.errormessage = solrResult.getErrorMessage();
+//	
 	//application.output("Processed " + record.filename);
 	databaseManager.saveData(record);
 	return record
