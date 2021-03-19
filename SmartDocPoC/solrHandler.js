@@ -1,19 +1,13 @@
 /**
- * @private
- * @typedef {{errormessage: String, summary: String, extension: String, creator: String, originalname: String, totalprocesstime: String, filesize: String, newname: String, title: String, newpath: String, url: String, content: String, contenttype: String, path: String, lastmodified: String, producer: String, id: String, errorcode: String}}
- * @SuppressWarnings(unused)
- * @properties={typeid:35,uuid:"008D6BB6-5013-4C34-ADAA-3C62A6A9A57E",variableType:-4}
- */
-var submitResult;
-
-
-
-/**
  * @properties={typeid:35,uuid:"47E438BA-F9C1-4FA0-9D58-B69ED514A2E7",variableType:-4}
  * @type {plugins.SmartDoc.SubmitResult}
  */
 var previous = null
 
+/**
+ * @properties={typeid:35,uuid:"86100DC6-20D0-418D-B353-0E16D7185EB7",variableType:-4}
+ */
+var isStopped = false
 
 /**
  * @type {Number}
@@ -21,8 +15,6 @@ var previous = null
  * @properties={typeid:35,uuid:"E6666E84-2051-4E08-A9E0-5F2EAFB5DEFF",variableType:4}
  */
 var left = 0
-
-
 
 /**
  * @type {String}
@@ -41,34 +33,28 @@ var total = 0;
 /**
  * ////Solr callback
  * @param {plugins.SmartDoc.SubmitResult} solrResult
- * 
+ *
  * @properties={typeid:24,uuid:"94BC7888-0E76-4D77-B131-0D71219162AB"}
  * @AllowToRunInFind
  */
 function processCallback(solrResult) {
-	application.output("received " + solrResult.getValue("id")) 
-	var record = updateRecord(solrResult)
-	//cleaning up
-	plugins.file.deleteFile(plugins.SmartDoc.serverFolder + "/" + record.filename)
+	updateRecord(solrResult)
 }
 
-
 /**
- 
+
  * @param {plugins.SmartDoc.SubmitResult} solrResult
  * @return {JSRecord}
  * @properties={typeid:24,uuid:"4C3D0F19-D04C-4412-BD02-E2ED25BEEA9D"}
  */
-function updateRecord(solrResult){
-	
-	if (solrResult === previous){
-		application.output("ignoring " + solrResult.getValue("id"))
-		return
+function updateRecord(solrResult) {
+
+	if (solrResult === previous || isStopped) {
+		return null
 	}
 
 	previous = solrResult
-	
-	
+
 	var resultID = solrResult.getValue("id")
 	// show which one is in process:
 	// is it a new record or an existing record?
@@ -77,21 +63,21 @@ function updateRecord(solrResult){
 	var qry = fs.getQuery()
 	qry.where.add(qry.columns.real_id.eq(resultID))
 	fs.loadRecords(qry)
-	
+
 	if (fs.getSize() == 0) {
 		// not found, we create it:
-		fs.newRecord(1,true);
+		fs.newRecord(1, true);
 		var record = fs.getRecord(fs.newRecord())
-		
+
 	} else {
 		// found, we select it:
 		record = fs.getRecord(1)
 	}
-	
-	application.output('about to update ' + solrResult.getValue("originalname"))
-	
+
+	application.output('Updating ' + solrResult.getValue("originalname"))
+
 	//database columns to be reviewed
-	
+
 	record.author = solrResult.getValue("author")
 	record.charset = solrResult.getValue("charset")
 	record.contenttype = solrResult.getValue("contenttype")
@@ -113,14 +99,28 @@ function updateRecord(solrResult){
 	record.url = solrResult.getValue("url")
 	record.real_id = solrResult.getValue("id")
 	record.indexed = new Date()
+
+	//cleaning up
+	plugins.file.deleteFile(plugins.SmartDoc.serverFolder + "/" + record.filename)
 	
-	// we also add the error code and message into the database to keep track of errors (if any):
-//	fs.errorcode = solrResult.getErrorCode();
-//	fs.errormessage = solrResult.getErrorMessage();
-//	
+
+	var time = solrResult.getValue("totalprocesstime");
+	total += time;
+
+	if (solrResult.isLastDocument()) {
+		fs.loadAllRecords()
+		application.output("Finished!\nTotal process time: " + total + "ms for " + fs.getSize() + " documents")
+		//somehow, not all documents are removed from the Solr index folder.
+		//Cleaning up here
+		var files = plugins.file.getFolderContents(plugins.SmartDoc.serverFolder)
+		for (var f = 0; f < files.length; f++) {
+			var file = files[f]
+			plugins.file.deleteFile(file)
+		}
+	}
+
 	//application.output("Processed " + record.filename);
 	databaseManager.saveData(record);
 	return record
 }
-
 

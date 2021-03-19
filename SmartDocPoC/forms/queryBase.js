@@ -5,14 +5,12 @@
  */
 var debug = 0;
 
-
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"791C91BE-2DA6-4293-8A77-5B3422DDB54D"}
  */
 var queryString = null;
-
 
 /**
  * @type {String}
@@ -47,7 +45,7 @@ var hilite = 1;
  *
  * @properties={typeid:35,uuid:"00F17458-BFA1-442E-9B6D-316D9D340511"}
  */
-var hiliteFields = "summary";
+var hiliteFields = "*";
 
 /**
  * @type {Number}
@@ -129,14 +127,7 @@ function onActionSearch(event) {
  * @return {Array<String>}
  */
 function search() {
-
 	var docIDs = []
-	// reset search result variables:
-	found = 0;
-	returned = 0;
-	result = "";
-	hiliteResult = "";
-
 	// setup the parameters object
 	var params = {
 		query: query,
@@ -151,63 +142,21 @@ function search() {
 		hiliteFragSize: hiliteFragSize,
 		hiliteSimplePre: '<h7 class="highlight">',
 		hiliteSimplePost: '</h7>',
-		hiliteMaxAnalyzedChars: 10000000,
 		sortBy: sortBy
 	};
 
-	//application.output(params)
-	// launch
-	
 	var res = plugins.SmartDoc.query(params);
 	if (res == null) {
 		// maybe the Solr server is unreachable?
 		plugins.dialogs.showErrorDialog("Error", "Your query returned a null result, check servoy_log.txt for errors", "OK");
 		return null;
 	}
-
-	// res is a JavaScript Object with a few properties, the main one being 'response', which is itself an Object:
-	found = res.response.numFound;
-	result += '<html><head></head><body>';
-	// inside the response property Object, we have some property, the main one being 'docs' which is an Array of result Objects
-	returned = res.response.docs.length;
-	// we iterate on the docs Array:
 	for (var i in res.response.docs) {
-//		result += '<table>';
 		var doc = res.response.docs[i];
 		docIDs.push(doc.id)
-
-//		// this little trick is to make sure the id is the first one to appear
-//		// (the properties are not guaranteed to be in a consistent order):
-		result += '<tr><td>id</td><td>' + doc.id + '</td></tr>';
-
-		// we iterate on the properties of the document result:
-		for (var d in doc) {
-			if (d != "id") {
-				result += '<tr><td>' + d + '</td><td>' + doc[d] + '</td></tr>';
-			}
-		}
-		result += '</table><hr>';
 	}
 	if (hilite == 1) {
 		setSnippets(res.highlighting)
-		hiliteResult = '<html><head><style type="text/css">em { font-weight: bold; font-style: plain; color: #FF3333; }</style></head><body>';
-
-		// we iterate on that highlighting property which contains one property key (the id) for each document
-		// the value of that property will be an object with one property for each of the hiliteFields properties
-		
-		var higlighting = JSON.parse(JSON.stringify(res.highlighting)) 
-		
-		for (var id in higlighting) {
-			hiliteResult += '<table><tr><td colspan="2">' + id + '</td></tr>';
-			var obj = higlighting[id];
-			if (obj) {
-				for (var field in obj) {
-					hiliteResult += '<tr><td>' + field + '</td><td>' + obj[field][0] + '</td></tr>';
-				}
-			}
-			hiliteResult += '</table><hr>';
-		}
-		hiliteResult += "</body></html>";
 	}
 
 	return docIDs
@@ -222,13 +171,14 @@ function setSnippets(snippets) {
 	var hfs = datasources.mem.highlights.getFoundSet()
 	hfs.loadAllRecords()
 	hfs.deleteAllRecords()
-	for (var key in snippets) {
-		if (!snippets.hasOwnProperty(key)) continue;
-		var summaryObj = snippets[key]['summary']
-		if (summaryObj) {
-			var snippet = hfs.getRecord(hfs.newRecord())
-			snippet.real_id = key
-			snippet.snippet =  summaryObj[0]
+	for (var id in snippets) {
+		var match = snippets[id];
+		if (match) {
+			for (var field in match) {
+				var snippet = hfs.getRecord(hfs.newRecord())
+				snippet.real_id = id
+				snippet.snippet = match[field][0]
+			}
 		}
 	}
 	databaseManager.saveData(hfs)

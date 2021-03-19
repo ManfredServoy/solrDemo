@@ -59,9 +59,17 @@ function onActionShowAdvancedSearch(event) {
  * @properties={typeid:24,uuid:"2780C685-9F25-4FED-AD68-E5CEBC3C6278"}
  */
 function onActionReset(event) {
+	application.output('resetting...')
+	scopes.solrHandler.isStopped = true
+	plugins.SmartDoc.stopProcess()
 	foundset.loadAllRecords()
 	foundset.deleteAllRecords()
 	plugins.SmartDoc.removeAll()
+	var files = plugins.file.getFolderContents(plugins.SmartDoc.serverFolder)
+	for (var f = 0; f < files.length; f++) {
+		var file = files[f]
+		plugins.file.deleteFile(file)
+	}
 }
 
 /**
@@ -72,6 +80,7 @@ function onActionReset(event) {
  * @properties={typeid:24,uuid:"4B37D35E-82D5-4F2C-86AD-D5768C2E7F8D"}
  */
 function onActionCreateIndex(event) {
+	scopes.solrHandler.isStopped = false
 	scopes.file.addFiles(indexPath, true)
 
 }
@@ -83,6 +92,7 @@ function onActionCreateIndex(event) {
 function onActionFind() {
 	if (queryString.length > 0) {
 		query = "summary:*" + queryString + "*\ncontent:*" + queryString + "*";
+		hiliteFields = '*'
 		var results = search()
 		var qb = datasources.db.smart_doc.results.createSelect();
 		qb.where.add(qb.columns.real_id.isin(results))

@@ -134,6 +134,7 @@ width:10
 dataprovider:"filename",
 headerTitle:"Name",
 svyUUID:"051ECEBA-6E63-4C29-A7B0-0C4F218BC1C3",
+tooltip:"path",
 width:80
 },
 {
