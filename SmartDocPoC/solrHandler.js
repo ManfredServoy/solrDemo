@@ -32,31 +32,16 @@ var total = 0;
 
 /**
  * ////Solr callback
- * @param {plugins.SmartDoc.SubmitResult} result
+ * @param {plugins.SmartDoc.SubmitResult} solrResult
  * 
  * @properties={typeid:24,uuid:"94BC7888-0E76-4D77-B131-0D71219162AB"}
  * @AllowToRunInFind
  */
-function processCallback(result) {
-	var resultID = result.getValue("id");
-	updateRecord(result)
-	// the totalprocesstime property simply measures the time it took for the whole process (it is never null):
-	var time = result.getValue("totalprocesstime");
-	total += time;
-	// update the feedback field:
-	if (result.getErrorCode() != result.ERROR_NONE) {
-		feedback += resultID + ": Exception: " + result.getErrorMessage() + "\n";
-	} else {
-		feedback += resultID + ": Done in "+time+"ms!\n";
-	}
-	if (result.isLastDocument()) {
-		var finished = "Finished!\nTotal process time: "+total+"ms\n";
-		feedback += finished;
-	}
-	
-	var solrfolder = plugins.SmartDoc.serverFolder
-	var filepath = result.getValue("newname")
-	plugins.file.deleteFile(solrfolder + "/" + filepath)
+function processCallback(solrResult) {
+	application.output("received " + solrResult.getValue("id")) 
+	var record = updateRecord(solrResult)
+	//cleaning up
+	plugins.file.deleteFile(plugins.SmartDoc.serverFolder + "/" + record.filename)
 }
 
 
@@ -67,7 +52,11 @@ function processCallback(result) {
  * @properties={typeid:24,uuid:"4C3D0F19-D04C-4412-BD02-E2ED25BEEA9D"}
  */
 function updateRecord(solrResult){
-	var resultID = solrResult.getValue("id");
+	var resultID = solrResult.getValue("id")
+	
+	if (solrResult.getValue("originalname") == "jenkinsError.html"){
+		application.output('braak')
+	}
 	// show which one is in process:
 	// is it a new record or an existing record?
 	var fs = datasources.db.smart_doc.results.getFoundSet()
@@ -86,6 +75,7 @@ function updateRecord(solrResult){
 		record = fs.getRecord(1)
 	}
 	
+	application.output('about to update ' + solrResult.getValue("originalname"))
 	
 	//database columns to be reviewed
 	
@@ -112,10 +102,10 @@ function updateRecord(solrResult){
 	record.indexed = new Date()
 	
 	// we also add the error code and message into the database to keep track of errors (if any):
-	record.errorcode = solrResult.getErrorCode();
-	record.errormessage = solrResult.getErrorMessage();
+	//record.errorcode = solrResult.getErrorCode();
+	//record.errormessage = solrResult.getErrorMessage();
 	
-	application.output("Processed " + record.filename);
+	//application.output("Processed " + record.filename);
 	databaseManager.saveData(record);
 	return record
 }
