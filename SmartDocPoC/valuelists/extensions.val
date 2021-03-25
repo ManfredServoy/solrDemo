@@ -1,0 +1,12 @@
+addEmptyValue:1,
+customProperties:"lazyLoading:false",
+dataProviderID1:"extension",
+dataSource:"db:/smart_doc/results",
+displayValueType:12,
+name:"extensions",
+realValueType:12,
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"8B0DD48D-490E-4934-8DB7-7CCE4E0E0F8A",
+valueListType:1

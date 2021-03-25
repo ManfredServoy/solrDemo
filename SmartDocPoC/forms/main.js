@@ -1,3 +1,11 @@
+/** 
+ * @type {scopes.svyToolbarFilter.ListComponentFilterRenderer}
+ *
+ * @properties={typeid:35,uuid:"19C9F804-E19D-45A9-9ADA-591E8EC4D00F",variableType:-4}
+ */
+var toolbarFilter;
+
+
 /**
  * @type {Number}
  *
@@ -19,12 +27,7 @@ var nullstring = "";
  */
 var dowloadClass = "fa fa-download";
 
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"E509CB13-AA89-40F5-BCA3-8121298B6D56"}
- */
-var indexPath = ""
+
 
 /**
  * @type {Number}
@@ -44,14 +47,34 @@ var subPath = "";
 
 
 /**
- * @param {JSEvent} event
- * @private
+ * TODO generated, please specify type and doc for the params
+ * @param firstShow
+ * @param event
  *
- * @properties={typeid:24,uuid:"376C2823-C60F-4115-9FF6-22FB3949489B"}
+ * @properties={typeid:24,uuid:"45ADF17C-57FE-4501-B839-8629D344DD1E"}
+ * @override
  */
-function onActionShowAdvancedSearch(event) {
-	forms.query.controller.show();
+function onShow(firstShow, event) {
+	//plugins.keyListener.addKeyListener('search', onKey)
 }
+
+/**
+ * @param value
+ * @param event
+ * @param keyCode
+ * @param altKey
+ * @param ctrlKey
+ * @param shiftKey
+ * @param capsLock
+ *
+ * @properties={typeid:24,uuid:"D0B5F29D-69E0-45B3-8972-24B831716908"}
+ */
+function onKey(value, event, keyCode, altKey, ctrlKey, shiftKey, capsLock){
+        application.output("The new value is "+value);
+}
+
+
+
 
 /**
  * @param event
@@ -60,7 +83,7 @@ function onActionShowAdvancedSearch(event) {
  */
 function onActionReset(event) {
 	application.output('resetting...')
-	scopes.solrHandler.isStopped = true
+	scopes.solr.isStopped = true
 	plugins.SmartDoc.stopProcess()
 	foundset.loadAllRecords()
 	foundset.deleteAllRecords()
@@ -72,6 +95,21 @@ function onActionReset(event) {
 	}
 }
 
+
+//action to show a specific filter popup. The onClick event of the ListComponent
+/**
+ * @param entry
+ * @param index
+ * @param dataTarget
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"68C4040F-BB58-4BC3-B93E-E5DE78399A04"}
+ */
+function onListComponentClick(entry, index, dataTarget, event) {
+        // propagate the onClick event into the toolbarFilter object to show the filter popup
+	toolbarFilter.onClick(entry, index, dataTarget, event);
+}
+
 /**
  * @param {JSEvent} event
  *
@@ -80,8 +118,8 @@ function onActionReset(event) {
  * @properties={typeid:24,uuid:"4B37D35E-82D5-4F2C-86AD-D5768C2E7F8D"}
  */
 function onActionCreateIndex(event) {
-	scopes.solrHandler.isStopped = false
-	scopes.file.addFiles(indexPath, true)
+	scopes.solr.isStopped = false
+	scopes.file.addFiles(scopes.watcher.indexPath, true)
 
 }
 
@@ -91,9 +129,8 @@ function onActionCreateIndex(event) {
  */
 function onActionFind() {
 	if (queryString.length > 0) {
-		query = "summary:*" + queryString + "*\ncontent:*" + queryString + "*";
-		hiliteFields = '*'
-		var results = search()
+		var q = scopes.solr.query(queryString)
+		var results = search(q)
 		var qb = datasources.db.smart_doc.results.createSelect();
 		qb.where.add(qb.columns.real_id.isin(results))
 		foundset.loadRecords(qb)
@@ -115,13 +152,13 @@ function onActionFind() {
  * @properties={typeid:24,uuid:"3AAE8E63-3B61-496B-AF6E-CCDD16785884"}
  */
 function onLoad(event) {
-	filter = scopes.svyToolbarFilter.createFilterToolbar(elements.customlist, elements.groupingtable_1);
+	toolbarFilter = scopes.svyToolbarFilter.createFilterToolbar(elements.customlist, elements.groupingtable_1);
 	scopes.svyToolbarFilter.setPopupDefaultOperator(scopes.svyToolbarFilter.FILTER_TYPES.TOKEN, scopes.svyPopupFilter.OPERATOR.LIKE);
 
-	indexPath = "G://Dossiers//2018//2018061201"
+	scopes.watcher.indexPath = "G://Dossiers//2018//2018061201"
 
 	if (application.getOSName().indexOf('Windows') == -1) {
-		indexPath = "/Users/manfredwitteman/Downloads/testFiles";
+		scopes.watcher.indexPath = "/Users/manfredwitteman/Downloads/testFiles";
 	}
 
 }
@@ -142,10 +179,10 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"B5C4F0A2-236B-4020-9F14-BF8CAB44FC2B"}
  */
 function onCellClick(foundsetindex, columnindex, record, event, columnid) {
-	var maxColumns = elements[event.getElementName()].columns.length
-	if (columnindex == maxColumns -1) {
-		download(record)
-	}
+//	var maxColumns = elements[event.getElementName()].columns.length
+//	if (columnindex == maxColumns -1) {
+//		download(record)
+//	}
 }
 
 /**
@@ -159,75 +196,48 @@ function onCellClick(foundsetindex, columnindex, record, event, columnid) {
  */
 function onDataChangeSwitch(oldValue, newValue, event) {
 	if (newValue == 1) {
-		startWatcher()
+		scopes.watcher.startWatcher()
 	} else {
-		stopWatcher()
+		scopes.watcher.stopWatcher()
 	}
 	return false;
 }
 
 
+
+
+
 /**
- * TODO generated, please specify type and doc for the params
- * @param {JSRecord<db:/smart_doc/results>} file
+ * @param {JSEvent} event
  *
- * @properties={typeid:24,uuid:"B5042A5A-E4F1-4275-937B-74C96D52E9D1"}
+ * @properties={typeid:24,uuid:"80555ADB-7C9A-4EB1-B8AE-66F3798E4C45"}
  */
-function download(file) {
-	var f = plugins.file.convertToJSFile(file.path)
-	//send the result back to the browser where the standard Save Download dialog will be displayed
-	plugins.file.writeFile(file.originalname, f.getBytes())
+function onFocusGainedSearch(event) {
+	// TODO Auto-generated method stub
+	//plugins.keyListener.addKeyListener(callbackKey,callback)
 
 }
 
-//////•••••••••••••••••••••FOLDER WATCHER••••NEEDS TO MOVE TO SCOPE•••••••••••••••///////////////////////////////
-
 /**
- * @type {scopes.watcher.FolderWatcher}
+ * @param {JSEvent} event
  *
- * @properties={typeid:35,uuid:"A7C9B739-1C28-443C-8290-67FF494641F8",variableType:-4}
+ * @properties={typeid:24,uuid:"3D82C3B0-3C59-4BF4-9F8E-148CAF2922C7"}
  */
-var watcher;
+function onActionAdvanced(event) {
+	forms.query.controller.show();
 
-/**
- * @properties={typeid:24,uuid:"0A35AC63-3DF7-4E50-943E-50024C26D583"}
- */
-function stopWatcher() {
-	plugins.webnotificationsToastr.error("Stopped watching files")
-	watcher.stopWatching();
 }
 
+
+//action to show the filter picker; trigger it from any UI element of your choice (.e.g filter icon)
 /**
- * @properties={typeid:24,uuid:"830328A8-15F1-4216-9800-C9A4ABC82D16"}
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"D84026E2-0742-4A26-81C5-E254D0DA95B4"}
  */
-function startWatcher() {
-	watcher = new scopes.watcher.FolderWatcher(indexPath, null, true);
-	plugins.webnotificationsToastr.success("Started watching files")
-	watcher.startWatching();
-}
-
-/**
- * @properties={typeid:24,uuid:"1EEF0474-606E-47A3-9051-C0F7D1CE7697"}
- * @param {String} filePath
- * @param {String} eventType
- */
-function handleWatcherCallback(filePath, eventType) {
-	switch (eventType.toString()) {
-	case "ENTRY_CREATE":
-		application.output("Created: " + filePath)
-		scopes.file.addFiles(filePath)
-		break;
-
-	case "ENTRY_MODIFY":
-		application.output("Modified: " + filePath)
-		break;
-
-	case "ENTRY_DELETE":
-		application.output("Deleted: " + filePath)
-		break;
-
-	default:
-		break;
-	}
+function onActionPickFilter(event) {
+	// make sure the element's name property is set; unnamed elements cannot be target
+	toolbarFilter.showPopupFilterPicker(elements[event.getElementName()])
+	toolbarFilter.setOnFilterApplyQueryCondition(callback)
 }
 

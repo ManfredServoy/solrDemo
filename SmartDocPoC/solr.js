@@ -1,4 +1,31 @@
 /**
+ * @typedef {{
+ * debug: Boolean,
+ * extras: Object,
+ * fields: String,
+ * filters: String,
+ * hiliteFields: String,
+ * hiliteFragSize: Number,
+ * hiliteMaxAnalyzedChars: Number,
+ * hiliteSimplePost: String,
+ * hiliteSimplePre: String,
+ * hiliting: Boolean,
+ * includeScore: Boolean,
+ * rows: Number,
+ * sortBy: String,
+ * start: Number,
+* query:String
+ * }}
+ * 
+ * @private 
+ * @SuppressWarnings(unused)
+ *
+ * @properties={typeid:35,uuid:"3DCD335E-CFCC-403E-9949-36CFD4E85035",variableType:-4}
+ */
+var queryObject;
+
+
+/**
  * @properties={typeid:35,uuid:"47E438BA-F9C1-4FA0-9D58-B69ED514A2E7",variableType:-4}
  * @type {plugins.SmartDoc.SubmitResult}
  */
@@ -124,3 +151,32 @@ function updateRecord(solrResult) {
 	return record
 }
 
+
+
+/**
+ * @param {String} searchString
+ * @return {queryObject}
+ *
+ * @properties={typeid:24,uuid:"3B2727A9-F4E1-44B1-8A7C-56E5E29916D6"}
+ */
+function query(searchString){
+	//init with convenient defaults
+	/**@type {queryObject}*/
+	var qObject = {}
+	qObject.query = "content:*" + searchString + "*"
+	qObject.filters = "extension:*"
+	qObject.start = 0, 
+	qObject.rows = 10
+	qObject.fields = "id,title,contenttype,extension,author,originalname"
+	qObject.debug = false
+	qObject.hiliting = true
+	qObject.includeScore = true
+	qObject.hiliteFields = '*'
+	qObject.hiliteFragSize = 250
+	qObject.hiliteMaxAnalyzedChars = 500000 //default value  = 51200. Higher values might impact performance
+	qObject.hiliteSimplePre = '<h7 class="highlight">'
+	qObject.hiliteSimplePost =  '</h7>'
+	qObject.sortBy = "score, id desc",
+	qObject.extras = {}
+	return qObject
+}

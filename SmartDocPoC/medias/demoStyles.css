@@ -334,6 +334,25 @@ portal
 	padding: 0pt !important;
 	color: black;
 }
+
+.iconBig{
+	text-align:center;
+	font-size: 70pt !important;
+	padding: 0pt !important;
+	color: grey;
+}
+
+.documentName{
+	text-align:center;
+	font-size: 24pt;
+	font-weight: bold;
+}
+
+.searchBox{
+	border-radius: 10px;
+}
+
+
 .highlight{
 	color: red;
 	font-weight:bolder;
@@ -345,4 +364,10 @@ portal
 
 .ok{
 	color: green;
+}
+
+.meta{
+	color: gray;
+	text-align: right;
+}
 }

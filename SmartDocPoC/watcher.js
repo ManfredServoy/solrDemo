@@ -1,4 +1,12 @@
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"BCB7241B-F33B-4E73-B1BA-BCB0A7ED3E6E"}
+ */
+var indexPath
+
+
+/**
  * Folder watcher that can be used to watch a folder for changes.<br><br>
  * 
  * Whenever a file or folder inside the folder being watched is added, modified or deleted,
@@ -32,7 +40,7 @@ function FolderWatcher(fileOrFilePath, callback, recursive) {
    
    var fileToWatch = getPathFromArgs(fileOrFilePath);
    
-   var methodToCall = scopes.svySystem.convertServoyMethodToQualifiedName(forms.main.handleWatcherCallback);
+   var methodToCall = scopes.svySystem.convertServoyMethodToQualifiedName(handleWatcherCallback);
    
    /**
     * @param {String|plugins.file.JSFile} fileArgs
@@ -165,3 +173,58 @@ function FolderWatcher(fileOrFilePath, callback, recursive) {
        }
    }
 }
+
+
+
+
+//////•••••••••••••••••••••FOLDER WATCHER HANDLERS••••NEEDS TO MOVE TO SEPARATE SCOPE?•••••••••••••••///////////////////////////////
+
+/**
+ * @type {scopes.watcher.FolderWatcher}
+ *
+ * @properties={typeid:35,uuid:"BA446970-192D-4B6C-893E-ED7694D73A25",variableType:-4}
+ */
+var watcher;
+
+/**
+ * @properties={typeid:24,uuid:"E93396B9-B87E-4DFE-871B-5E7D5BFD70F6"}
+ */
+function stopWatcher() {
+	plugins.webnotificationsToastr.error("Stopped watching files")
+	watcher.stopWatching();
+}
+
+/**
+ * @properties={typeid:24,uuid:"D8B8AA4E-E14F-4A14-91D0-0E5CE4E63872"}
+ */
+function startWatcher() {
+	watcher = new scopes.watcher.FolderWatcher(indexPath, null, true);
+	plugins.webnotificationsToastr.success("Started watching files")
+	watcher.startWatching();
+}
+
+/**
+ * @properties={typeid:24,uuid:"3DD2C287-2C1D-402D-A178-1B95FA06927A"}
+ * @param {String} filePath
+ * @param {String} eventType
+ */
+function handleWatcherCallback(filePath, eventType) {
+	switch (eventType.toString()) {
+	case "ENTRY_CREATE":
+		application.output("Created: " + filePath)
+		scopes.file.addFiles(filePath)
+		break;
+
+	case "ENTRY_MODIFY":
+		application.output("Modified: " + filePath)
+		break;
+
+	case "ENTRY_DELETE":
+		application.output("Deleted: " + filePath)
+		break;
+
+	default:
+		break;
+	}
+}
+

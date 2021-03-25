@@ -1,0 +1,271 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i');
+@import url("themes/theme-servoy.css");
+	
+body
+{
+	font-family: 'Roboto', sans-serif;
+}
+
+/* TODO move the font icon */
+.font-icon
+{
+	font-size: 18px;
+	text-align: center;
+	color: #aaa;
+	transition: .25s;
+}
+.font-icon.large
+{
+	font-size: 24px;
+}
+.font-icon.inverted, .glyph-font.inverted
+{
+	color: #fff;
+}
+
+.font-icon:HOVER
+{
+	color: #e77509;
+}
+
+/* 
+.message-submit {
+  position: absolute;
+  z-index: 1;
+  top: 9px;
+  right: 10px;
+  color: #fff;
+  border: none;
+  background: #248A52;
+  font-size: 10px;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 6px 10px;
+  border-radius: 10px;
+  outline: none !important;
+  -webkit-transition: background .2s ease;
+  transition: background .2s ease;
+}
+
+.customLabel{
+	color:#000000;
+}
+
+.margin{
+	
+	margin-top:15px;
+}
+*/
+
+.flender-select2 .select2-container {
+	font-size: 1em;
+}
+
+.flender-select2 {
+    width: auto;
+}
+
+.flender-select2 .select2-container--default .select2-selection--multiple {
+    background-color: white;
+    border: 0px solid #d8d8d8;
+    border-radius: 0px;
+    cursor: text;
+}
+
+.flender-select2 .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border: 0px solid #d8d8d8;
+    outline: 0;
+    border-radius: 0px;
+}
+
+.flender-select2 .select2-container .select2-selection--multiple .select2-selection__rendered {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2px 5px;
+}
+
+.flender-select2 .svy-select2-autotokenizer.select2-sm .svy-select2-autotokenizer-container .select2-selection__choice, .svy-select2-autotokenizer.select2-sm .svy-select2-autotokenizer-container .select2-search--inline .select2-search__field {
+    margin-bottom: 5px;
+}
+
+.flender-select2 .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #76BB29;
+    border: 0px solid #d8d8d8;
+    border-radius: 30px;
+    cursor: default;
+    margin-right: 10px;
+    margin-top: 5px;
+    padding: 1px 15px 1px 10px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.flender-select2 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #4A4A4A;
+    cursor: pointer;
+    font-weight: normal;
+    margin-right: 5px;
+    font-size: 0px;
+}
+
+.flender-select2 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:before {
+	font-family: "Material Design Icons";
+	content: "\F15A";
+	font-size: 20px;
+	color: #ffffff;
+}
+
+.flender-select2 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover:before {
+	font-family: "Material Design Icons";
+	content: "\F159";
+	font-size: 20px;
+	color: #ffffff;
+}
+
+.flender-select2 .select2-results__option[aria-selected=true] {
+	background-color: #fff;
+	color: inherit;
+}
+
+.flender-select2 .select2-results__option[aria-selected]:before {
+	font-family: "Material Design Icons";
+	font-size: 20px;
+	content: "\F131";
+	margin-right: 5px;
+}
+
+
+.flender-select2 .select2-results__option[aria-selected=true]:before {
+	content: "\F135";
+}
+
+/* TODO */
+/* Bootstrap uses .h1 for font-size
+.h1 {
+	font-size: 16px;
+}
+
+.h1 .small {
+	font-size: 75%;
+}
+*/
+
+
+
+/*
+data-ng-animate
+
+0 A tab-pane ng-scope active
+
+1 A tab-pane ng-scope active ng-animate
+
+2 A tab-pane ng-scope active ng-animate active-remove\
+
+3 B tab-pane ng-scope ng-animate active-add
+
+// here the first tab is shown
+
+// here the previous tab is gone
+
+
+4 A tab-pane ng-scope ng-animate active-remove active-remove-active
+
+5 A tab-pane ng-scope ng-animate
+
+6 A tab-pane ng-scope
+
+7 B tab-pane ng-scope ng-animate active-add active
+
+8 B tab-pane ng-scope ng-animate active-add active active-add-active
+
+9 B tab-pane ng-scope ng-animate active active-add-active
+
+10 B tab-pane ng-scope ng-animate active
+
+11 B tab-pane ng-scope active */
+
+
+/*
+.tab-pane.active-remove > div {
+	right: 100% !important;
+}
+
+.tab-pane.active-add > div {
+	right: 100% !important;
+}
+
+.tab-pane.active-remove-active > div {
+}
+
+.tab-pane.active-add-active > div {
+	right: 100% !important;
+}
+
+.tab-pane.active-add-active > div {
+	
+}
+
+.tab-pane.active.ng-animate > div {
+	right: 0;
+} */
+
+
+/*
+.tab-pane.active-remove > div,
+.tab-pane > div.ng-leave-prepare,
+.tab-pane > div.ng-leave {
+	right: 100% !important;
+}
+
+.tab-pane > div.ng-leave {
+	right: 100% !important;
+} */
+
+
+.svy-tabpanel > .tab-content > .tab-pane > div {
+	-webkit-transition: 0.3s ease-out left, right;
+    -moz-transition: 0.3s ease-out left, right;
+    -ms-transition: 0.3s ease-out left, right;
+    -o-transition: 0.3s ease-out left, right;
+    transition: 0.3s ease-out left, right;
+}
+
+.svy-tabpanel > .tab-content > .tab-pane > div.ng-enter {
+	left: 100% !important;
+}
+
+.tab-pane > div {
+}
+
+.tab-pane > div {
+}
+
+.tab-pane.active-add-active > div {
+	
+}
+
+.tab-pane.active.ng-animate > div {
+}
+
+
+tab-pane ng-scope ng-animate active active-add-active {
+	
+}
+
+
+.tree-col {
+	display: inline-block;
+}
+
+span.fancytree-title {
+	width: 100%;	
+}
+
+.col-1, .col-2, .col-3 {
+	width: 33%;
+	border-right: 1px solid #ddd;
+}
+
+

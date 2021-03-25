@@ -118,7 +118,19 @@ var start = 0;
  * @properties={typeid:24,uuid:"32367673-B17A-470C-A060-B6E746B24DBC"}
  */
 function onActionSearch(event) {
-	search()
+	var qObject = scopes.solr.query(query)
+	qObject.query = query
+	qObject.filters = filters
+	qObject.start = start
+	qObject.rows = rows
+	qObject.fields = fields 
+	qObject.debug = debug
+	qObject.hiliting = hilite 
+	qObject.includeScore = includeScore
+	qObject.hiliteFields = hiliteFields
+	qObject.hiliteFragSize = hiliteFragSize
+	qObject.sortBy = sortBy
+	search(qObject)
 
 }
 
@@ -126,29 +138,15 @@ function onActionSearch(event) {
  * @properties={typeid:24,uuid:"0F503E84-6BAD-43F3-81AE-38C7A60F190B"}
  * @return {Array<String>}
  */
-function search() {
+function search(q) {
 	var docIDs = []
 	// setup the parameters object
-	var params = {
-		query: query,
-		filters: filters,
-		start: start,
-		rows: rows,
-		fields: fields,
-		debug: (debug == 1),
-		hiliting: (hilite == 1),
-		includeScore: (includeScore == 1),
-		hiliteFields: hiliteFields,
-		hiliteFragSize: hiliteFragSize,
-		hiliteSimplePre: '<h7 class="highlight">',
-		hiliteSimplePost: '</h7>',
-		sortBy: sortBy
-	};
+	
 
-	var res = plugins.SmartDoc.query(params);
+	var res = plugins.SmartDoc.query(q);
 	if (res == null) {
 		// maybe the Solr server is unreachable?
-		plugins.dialogs.showErrorDialog("Error", "Your query returned a null result, check servoy_log.txt for errors", "OK");
+		plugins.webnotificationsToastr.error("Your query returned a null result, check servoy_log.txt for errors", "Search Error");
 		return null;
 	}
 	for (var i in res.response.docs) {

@@ -7,7 +7,8 @@ var _oKnownFiles = {
 	MAIL: ['eml', 'msg'],
 	PDF: ['pdf'],
 	WEB: ['html', 'htm'],
-	TEXT: ['txt']
+	TEXT: ['txt'],
+	IMAGE: ['png', 'jpg', 'tif', 'tiff', 'jpeg']
 };
 
 
@@ -173,7 +174,7 @@ var params = {
 	defaultLogin: 'myLogin',
 	defaultPassword: 'myPassword',
 	// the callback method that will save the results in the database
-	callback: scopes.solrHandler.processCallback,
+	callback: scopes.solr.processCallback,
 	// the accepted extensions (if not provided, everything goes!)
 	accepted: accepted,
 	// if true, will trim all double spacing/CR/LF/Tabs (can be overridden at the document level):
@@ -280,8 +281,10 @@ function newFile(file) {
 	record.path = file.getAbsolutePath()
 	record.hash = plugins.FileWatcher.getMD5Checksum(file)
 	record.parentfolder = parent(file.getAbsolutePath())
+	record.lastmodified = file.lastModified()
 	record.filename = file.getName()
 	record.extension = file.getName().split('.').pop()
+	record.filesize = file.size()
 	//delete index
 	plugins.SmartDoc.remove(record.real_id)
 }
