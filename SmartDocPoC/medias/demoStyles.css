@@ -349,7 +349,8 @@ portal
 }
 
 .searchBox{
-	border-radius: 10px;
+	text-indent: 7px;
+	border-radius: 15px;
 }
 
 
@@ -370,4 +371,8 @@ portal
 	color: gray;
 	text-align: right;
 }
+
+
+.ag-side-bar {
+   display: none;
 }

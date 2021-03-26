@@ -7,7 +7,6 @@ function filetype() {
 	}
 
 	if (scopes.file._oKnownFiles.WORD.indexOf(extension) > -1) {
-		application.output(extension)
 		return 'Word';
 	}
 	if (scopes.file._oKnownFiles.EXCEL.indexOf(extension) > -1) {
@@ -120,7 +119,6 @@ function fileIcon() {
 	}
 
 	if (scopes.file._oKnownFiles.WORD.indexOf(extension) > -1) {
-		application.output(extension)
 		return "fa fa-file-word-o icon"
 	}
 	if (scopes.file._oKnownFiles.EXCEL.indexOf(extension) > -1) {

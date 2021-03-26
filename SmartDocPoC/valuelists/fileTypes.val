@@ -1,12 +1,11 @@
 addEmptyValue:1,
 customProperties:"lazyLoading:false",
-dataProviderID1:"filename",
-dataSource:"db:/smart_doc/results",
+customValues:"Word\
+Excel\
+PDF\
+Afbeelding",
 displayValueType:12,
 name:"fileTypes",
 realValueType:12,
-returnDataProviders:1,
-showDataProviders:1,
 typeid:34,
-uuid:"2C09A10B-1764-405C-A6D9-C5BAD773CFDC",
-valueListType:1
+uuid:"2C09A10B-1764-405C-A6D9-C5BAD773CFDC"

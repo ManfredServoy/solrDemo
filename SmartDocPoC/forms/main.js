@@ -1,10 +1,9 @@
-/** 
+/**
  * @type {scopes.svyToolbarFilter.ListComponentFilterRenderer}
  *
  * @properties={typeid:35,uuid:"19C9F804-E19D-45A9-9ADA-591E8EC4D00F",variableType:-4}
  */
 var toolbarFilter;
-
 
 /**
  * @type {Number}
@@ -27,8 +26,6 @@ var nullstring = "";
  */
 var dowloadClass = "fa fa-download";
 
-
-
 /**
  * @type {Number}
  *
@@ -43,11 +40,7 @@ var onlyNew = 0;
  */
 var subPath = "";
 
-
-
-
 /**
- * TODO generated, please specify type and doc for the params
  * @param firstShow
  * @param event
  *
@@ -55,7 +48,7 @@ var subPath = "";
  * @override
  */
 function onShow(firstShow, event) {
-	//plugins.keyListener.addKeyListener('search', onKey)
+	plugins.keyListener.addKeyListener('search', onKey)
 }
 
 /**
@@ -69,12 +62,30 @@ function onShow(firstShow, event) {
  *
  * @properties={typeid:24,uuid:"D0B5F29D-69E0-45B3-8972-24B831716908"}
  */
-function onKey(value, event, keyCode, altKey, ctrlKey, shiftKey, capsLock){
-        application.output("The new value is "+value);
+function onKey(value, event, keyCode, altKey, ctrlKey, shiftKey, capsLock) {
+	if (value.length > 0) {
+
+		//find in solr
+		var qb = datasources.db.smart_doc.results.createSelect()
+		var or = qb.or
+		var q = scopes.solr.query(value)
+		var results = search(q)
+		or.add(qb.columns.real_id.isin(results))
+
+		//find in dataproviders
+		var dataproviders = ['filename']
+		for (var d = 0; d < dataproviders.length; d++) {
+			or.add(qb.columns[dataproviders[d]].lower.like("%" + value + "%"))
+		}
+		qb.where.add(or)
+		foundset.loadRecords(qb)
+	} else {
+		var snippets = datasources.mem.highlights.getFoundSet()
+		snippets.loadAllRecords()
+		snippets.deleteAllRecords()
+		foundset.loadAllRecords()
+	}
 }
-
-
-
 
 /**
  * @param event
@@ -95,7 +106,6 @@ function onActionReset(event) {
 	}
 }
 
-
 //action to show a specific filter popup. The onClick event of the ListComponent
 /**
  * @param entry
@@ -106,7 +116,7 @@ function onActionReset(event) {
  * @properties={typeid:24,uuid:"68C4040F-BB58-4BC3-B93E-E5DE78399A04"}
  */
 function onListComponentClick(entry, index, dataTarget, event) {
-        // propagate the onClick event into the toolbarFilter object to show the filter popup
+	// propagate the onClick event into the toolbarFilter object to show the filter popup
 	toolbarFilter.onClick(entry, index, dataTarget, event);
 }
 
@@ -129,10 +139,22 @@ function onActionCreateIndex(event) {
  */
 function onActionFind() {
 	if (queryString.length > 0) {
+
+		//find in solr
+		var qb = datasources.db.smart_doc.results.createSelect()
+		var or = qb.or
 		var q = scopes.solr.query(queryString)
 		var results = search(q)
-		var qb = datasources.db.smart_doc.results.createSelect();
-		qb.where.add(qb.columns.real_id.isin(results))
+		or.add(qb.columns.real_id.isin(results))
+
+		//find in datasources
+		var dataproviders = ['filename']
+		for (var d = 0; d < dataproviders.length; d++) {
+			or.add(qb.columns[dataproviders[d]].lower.like("%" + queryString + "%"))
+			//qb.where.add(qb.columns[dataproviders[d]].lower.like("%" + queryString + "%"))
+			application.output('bla')
+		}
+		qb.where.add(or)
 		foundset.loadRecords(qb)
 	} else {
 		var snippets = datasources.mem.highlights.getFoundSet()
@@ -140,6 +162,7 @@ function onActionFind() {
 		snippets.deleteAllRecords()
 		foundset.loadAllRecords()
 	}
+
 }
 
 /**
@@ -154,9 +177,8 @@ function onActionFind() {
 function onLoad(event) {
 	toolbarFilter = scopes.svyToolbarFilter.createFilterToolbar(elements.customlist, elements.groupingtable_1);
 	scopes.svyToolbarFilter.setPopupDefaultOperator(scopes.svyToolbarFilter.FILTER_TYPES.TOKEN, scopes.svyPopupFilter.OPERATOR.LIKE);
-
 	scopes.watcher.indexPath = "G://Dossiers//2018//2018061201"
-
+	toolbarFilter.setOnFilterApplyQueryCondition(filterCallback);
 	if (application.getOSName().indexOf('Windows') == -1) {
 		scopes.watcher.indexPath = "/Users/manfredwitteman/Downloads/testFiles";
 	}
@@ -179,10 +201,10 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"B5C4F0A2-236B-4020-9F14-BF8CAB44FC2B"}
  */
 function onCellClick(foundsetindex, columnindex, record, event, columnid) {
-//	var maxColumns = elements[event.getElementName()].columns.length
-//	if (columnindex == maxColumns -1) {
-//		download(record)
-//	}
+	//	var maxColumns = elements[event.getElementName()].columns.length
+	//	if (columnindex == maxColumns -1) {
+	//		download(record)
+	//	}
 }
 
 /**
@@ -203,10 +225,6 @@ function onDataChangeSwitch(oldValue, newValue, event) {
 	return false;
 }
 
-
-
-
-
 /**
  * @param {JSEvent} event
  *
@@ -218,17 +236,6 @@ function onFocusGainedSearch(event) {
 
 }
 
-/**
- * @param {JSEvent} event
- *
- * @properties={typeid:24,uuid:"3D82C3B0-3C59-4BF4-9F8E-148CAF2922C7"}
- */
-function onActionAdvanced(event) {
-	forms.query.controller.show();
-
-}
-
-
 //action to show the filter picker; trigger it from any UI element of your choice (.e.g filter icon)
 /**
  * @param event
@@ -238,6 +245,45 @@ function onActionAdvanced(event) {
 function onActionPickFilter(event) {
 	// make sure the element's name property is set; unnamed elements cannot be target
 	toolbarFilter.showPopupFilterPicker(elements[event.getElementName()])
-	toolbarFilter.setOnFilterApplyQueryCondition(callback)
 }
 
+/**
+ * @param {QBSelect<db:/smart_doc/results>} query the query to enhance
+ * @param {String} dataprovider the column/dataprovider of this filter
+ * @param {String} operator the operator used
+ * @param {Array} values the filter's values
+ * @param {scopes.svyPopupFilter.AbstractPopupFilter} filter the filter object
+ * @return {Boolean}
+ *
+ * @properties={typeid:24,uuid:"CC778146-259C-4C4A-ADA6-F8974096A4C5"}
+ */
+function filterCallback(query, dataprovider, operator, values, filter) {
+	if (dataprovider === 'extension') {
+		var or = query.or
+		for (var v = 0; v < values.length; v++) {
+			var value = values[v]
+			var extensions = []
+
+			switch (value) {
+			case 'word':
+				extensions = ["DOC", "DOCX"]
+				break;
+			case 'excel':
+				extensions = ["XLS", "XLSX", "XLSM"]
+				break;
+			case 'pdf':
+				extensions = ["PDF"]
+				break;
+			case 'afbeelding':
+				extensions = ["JPG", "JPEG", "PNG", "PSD", "TIF"]
+				break;
+
+			default:
+				break;
+			}
+			or.add(query.columns.extension.upper.isin(extensions))
+		}
+		query.where.add(or)
+	}
+	return false;
+}

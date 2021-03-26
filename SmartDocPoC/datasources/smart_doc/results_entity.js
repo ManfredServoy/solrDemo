@@ -33,5 +33,5 @@ function kickOffSolr(file){
 	var setName = "uploadedFile_" + (i + 1) + "." + nameAndExtension[1];
 	// feed the documents array with a new object to be processed:
 	var extras = {}
-	params.documents.push({ id: fileRecord.id, file: file.getName(), newName: file.getName() });
+	params.documents.push({ id: fileRecord.id, file: file, newName: file.getName() });
 }
